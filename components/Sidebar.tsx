@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Modal, Animated } from 'react-native';
 
 interface SidebarProps {
   isVisible: boolean;
@@ -7,13 +7,33 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isVisible, onClose }: SidebarProps) {
+  const slideAnim = useRef(new Animated.Value(-300)).current; // Start off screen
+  
   const menuItems = [
     { id: 'dashboard', title: 'แดชบอร์ด', icon: '🏠' },
     { id: 'users', title: 'ผู้ใช้งาน', icon: '👤' },
     { id: 'transactions', title: 'ธุรกรรม', icon: '📄' },
-    { id: 'parking', title: 'ลานรถเมก์', icon: '📅' },
+    { id: 'parking', title: 'สาขาร้านค้า', icon: '📅' },
     { id: 'packages', title: 'แพ็คเกจ', icon: '📊' },
   ];
+
+  useEffect(() => {
+    if (isVisible) {
+      // Slide in
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      // Slide out
+      Animated.timing(slideAnim, {
+        toValue: -300,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [isVisible, slideAnim]);
 
   return (
     <Modal
@@ -29,12 +49,18 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
         onPress={onClose}
       >
         {/* Sidebar Container */}
-        <View className="flex-row">
-          <TouchableOpacity 
-            activeOpacity={1} 
-            className="w-64 bg-white h-full shadow-lg"
-            onPress={(e) => e.stopPropagation()}
+        <View className="flex-row h-full">
+          <Animated.View 
+            style={{
+              transform: [{ translateX: slideAnim }],
+            }}
           >
+            <View className="bg-white shadow-lg w-64 h-full">
+              <TouchableOpacity
+                activeOpacity={1}
+                style={{ flex: 1 }}
+                onPress={(e) => e.stopPropagation()}
+              >
             <ScrollView className="flex-1">
               {/* Close Button */}
               <TouchableOpacity
@@ -133,7 +159,9 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
                 </TouchableOpacity>
               </View>
             </ScrollView>
-          </TouchableOpacity>
+            </TouchableOpacity>
+            </View>
+          </Animated.View>
           
           {/* Empty space for the rest of the screen */}
           <View className="flex-1" />
