@@ -135,13 +135,6 @@ export default function TransactionList() {
     }
   };
 
-  const getRangeLabel = (): string => {
-    if (!startDate && !endDate) return 'วันเริ่มต้น - วันสิ้นสุด';
-    const s = startDate ? formatDate(startDate) : 'วันเริ่มต้น';
-    const e = endDate ? formatDate(endDate) : 'วันสิ้นสุด';
-    return `${s} - ${e}`;
-  };
-
   const formatTxnForDisplay = (txnId: string): string => {
     if (!txnId) return '';
     if (txnId.length <= 3) return txnId;
@@ -154,14 +147,27 @@ export default function TransactionList() {
     <View className="mb-4">
       {/* Search Section - Outside Component */}
       <View className="mb-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-md">
-        {/* Row 1: Date range pill + clear */}
+        {/* Row 1: Start + End date pills and clear */}
         <View className="mb-3 flex-row items-center">
+          {/* Start date */}
           <TouchableOpacity
             onPress={() => setShowStartDatePicker(true)}
-            className="flex-1 flex-row items-center justify-between rounded-full border border-gray-200 bg-gray-50 px-4 py-2">
-            <Text className="text-sm text-gray-700">{getRangeLabel()}</Text>
+            className="flex-1 flex-row items-center justify-between rounded-full border border-gray-200 bg-gray-50 px-4 py-2 mr-3">
+            <Text className={`text-sm ${startDate ? 'text-gray-800' : 'text-gray-400'}`}>
+              {startDate ? formatDate(startDate) : 'วันเริ่มต้น'}
+            </Text>
             <Text className="text-gray-500">📅</Text>
           </TouchableOpacity>
+          {/* End date */}
+          <TouchableOpacity
+            onPress={() => setShowEndDatePicker(true)}
+            className="flex-1 flex-row items-center justify-between rounded-full border border-gray-200 bg-gray-50 px-4 py-2">
+            <Text className={`text-sm ${endDate ? 'text-gray-800' : 'text-gray-400'}`}>
+              {endDate ? formatDate(endDate) : 'วันสิ้นสุด'}
+            </Text>
+            <Text className="text-gray-500">📅</Text>
+          </TouchableOpacity>
+          {/* Clear */}
           <TouchableOpacity
             onPress={clearSearch}
             className="ml-3 h-10 w-10 items-center justify-center rounded-full border border-red-200 bg-white">

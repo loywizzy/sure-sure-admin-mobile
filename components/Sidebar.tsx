@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Modal, Animated } from 'react-native';
+import { useRouter } from 'expo-router';
 
 interface SidebarProps {
   isVisible: boolean;
@@ -8,6 +9,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isVisible, onClose }: SidebarProps) {
   const slideAnim = useRef(new Animated.Value(-300)).current; // Start off screen
+  const router = useRouter();
 
   const menuItems = [
     { id: 'dashboard', title: 'แดชบอร์ด', icon: '🏠' },
@@ -86,7 +88,12 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
                         className="mx-4 mb-1 flex-row items-center rounded-lg px-3 py-3"
                         activeOpacity={0.7}
                         onPress={() => {
-                          // Handle navigation here
+                          if (item.id === 'transactions') {
+                            router.push('/transactions');
+                          }
+                          if (item.id === 'dashboard') {
+                            router.push('/');
+                          }
                           onClose();
                         }}>
                         <Text className="mr-3 text-base">{item.icon}</Text>
