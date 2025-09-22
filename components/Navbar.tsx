@@ -6,21 +6,25 @@ interface NavbarProps {
   title?: string;
 }
 
-export default function Navbar({ onMenuPress, title = 'แดชบอร์ด' }: NavbarProps) {
+export default function Navbar({ onMenuPress, title = "แดชบอร์ด" }: NavbarProps) {
   return (
-    <View className="flex-row items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
+    <View className="bg-white border-b border-gray-200 px-4 py-3 flex-row items-center justify-between">
       {/* Left side - Menu button */}
-      <TouchableOpacity onPress={onMenuPress} className="-ml-2 p-2" activeOpacity={0.7}>
-        <View className="h-6 w-6 justify-between">
-          <View className="h-0.5 w-full bg-gray-700" />
-          <View className="h-0.5 w-full bg-gray-700" />
-          <View className="h-0.5 w-full bg-gray-700" />
+      <TouchableOpacity
+        onPress={onMenuPress}
+        className="p-2 -ml-2"
+        activeOpacity={0.7}
+      >
+        <View className="w-6 h-6 justify-between">
+          <View className="w-full h-0.5 bg-gray-700" />
+          <View className="w-full h-0.5 bg-gray-700" />
+          <View className="w-full h-0.5 bg-gray-700" />
         </View>
       </TouchableOpacity>
 
       {/* Center - Title */}
       {title && (
-        <Text className="-mr-10 flex-1 text-center text-lg font-semibold text-gray-800">
+        <Text className="text-lg font-semibold text-gray-800 flex-1 text-center -mr-10">
           {title}
         </Text>
       )}
@@ -28,9 +32,10 @@ export default function Navbar({ onMenuPress, title = 'แดชบอร์ด'
 
       {/* Right side - Profile */}
       <TouchableOpacity
-        className="h-8 w-8 items-center justify-center rounded-full bg-gray-300"
-        activeOpacity={0.7}>
-        <Text className="text-sm font-medium text-gray-600">T</Text>
+        className="w-8 h-8 bg-gray-300 rounded-full items-center justify-center"
+        activeOpacity={0.7}
+      >
+        <Text className="text-gray-600 font-medium text-sm">T</Text>
       </TouchableOpacity>
     </View>
   );

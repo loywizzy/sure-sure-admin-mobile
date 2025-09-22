@@ -1,18 +1,11 @@
-import '@expo/metro-runtime';
-import { Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
 import { useState } from 'react';
-import { BarChart } from 'react-native-chart-kit';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
-import StatsCard from '../features/dashboard/components/StatsCard';
-import LineChart from '../features/dashboard/components/LineChart';
-import PieChart from '../features/dashboard/components/PieChart';
-import TransactionList from '../features/dashboard/components/TransactionList';
-import CustomerList from '../features/dashboard/components/CustomerList';
+import StatsCard from '../components/StatsCard';
 
 export default function Index() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-  const screenWidth = Dimensions.get('window').width;
 
   const handleMenuPress = () => {
     setIsSidebarVisible(true);
@@ -26,161 +19,103 @@ export default function Index() {
     <View className="flex-1 bg-gray-50">
       {/* Navbar */}
       <Navbar onMenuPress={handleMenuPress} title="แดชบอร์ด" />
-
+      
       {/* Sidebar Modal */}
       <Sidebar isVisible={isSidebarVisible} onClose={handleSidebarClose} />
-
+      
       {/* Main Content */}
       <ScrollView className="flex-1">
-        {/* Stats Cards - Hero Card + 3 Mini Layout */}
-        <View className="px-4 pt-4">
-          {/* Hero Card - รายได้เดือนนี้ */}
-          <View className="mb-4">
+        {/* Stats Cards Row 1 */}
+        <View className="flex-row px-4 pt-4 mb-3">
+          <View className="flex-1 mr-2">
             <StatsCard
-              title="รายได้เดือนนี้"
+              title="รายได้รอบวันนี้"
               mainValue="150,000฿"
-              subItems={[
-                { label: 'รายได้เดือนที่แล้ว', value: '15,000฿', color: 'red' },
-                { label: 'น้อยกว่าเดือนที่แล้ว', value: '10,000฾', color: 'red' },
-              ]}
+              subValue="15,000฿ บัดเครดิต | 10,000฿ แคช"
+              changeValue="7 ↗ 3"
+              changeType="increase"
               icon="💰"
-              iconBgColor="bg-gradient-to-r from-emerald-500 to-emerald-600"
-              isHeroCard={true}
+              iconBgColor="bg-blue-500"
             />
           </View>
-
-          {/* 3 Mini Cards Row */}
-          <View className="mb-4 flex-row">
-            <View className="mr-1 flex-1">
-              <StatsCard
-                title="รายการตรวจสอบ"
-                mainValue="10"
-                subItems={[
-                  { label: 'ถูกต้อง', value: '7', color: 'green' },
-                  { label: 'ถูกปฏิเสธ', value: '3', color: 'red' },
-                ]}
-                icon="✅"
-                iconBgColor="bg-gradient-to-r from-blue-500 to-blue-600"
-                isMiniCard={true}
-              />
-            </View>
-            <View className="mx-1 flex-1">
-              <StatsCard
-                title="แพ็คเกจ"
-                mainValue="10"
-                subItems={[
-                  { label: 'กำลังใช้งาน', value: '7', color: 'green' },
-                  { label: 'ไม่ได้ใช้งานแล้ว', value: '3', color: 'red' },
-                ]}
-                icon="📦"
-                iconBgColor="bg-gradient-to-r from-purple-500 to-purple-600"
-                isMiniCard={true}
-              />
-            </View>
-            <View className="ml-1 flex-1">
-              <StatsCard
-                title="ลูกค้า"
-                mainValue="10"
-                subItems={[
-                  { label: 'กำลังใช้งาน', value: '7', color: 'green' },
-                  { label: 'ไม่ได้ใช้งานแล้ว', value: '3', color: 'red' },
-                ]}
-                icon="👥"
-                iconBgColor="bg-gradient-to-r from-orange-500 to-orange-600"
-                isMiniCard={true}
-              />
-            </View>
+          <View className="flex-1 ml-2">
+            <StatsCard
+              title="รายการรอจัดส่อง"
+              mainValue="10"
+              subValue="อนุมัติ"
+              changeValue="7 ↗ 3"
+              changeType="increase"
+              icon="✅"
+              iconBgColor="bg-blue-500"
+            />
           </View>
         </View>
 
-        {/* Bar Chart Section */}
-        <View className="mb-4 px-4">
-          <View
-            className="rounded-xl border border-gray-50 bg-white p-5 shadow-xl"
-            style={{
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.1,
-              shadowRadius: 12,
-              elevation: 8,
-            }}>
-            <View className="mb-6 flex-row items-center justify-between">
-              <View className="flex-row items-center">
-                <View className="mr-3 h-6 w-6">
-                  <View className="mb-1 h-1 w-full rounded-full bg-blue-500" />
-                  <View className="mb-1 h-2 w-full rounded-full bg-blue-500" />
-                  <View className="h-1.5 w-full rounded-full bg-blue-500" />
-                </View>
-                <Text className="text-lg font-bold text-gray-800">ยอดการใช้งานแบบรายวัน</Text>
-              </View>
-              <TouchableOpacity className="flex-row items-center rounded-lg bg-gray-50 px-3 py-2">
-                <Text className="mr-1 text-sm text-gray-600">This Week</Text>
+        {/* Stats Cards Row 2 */}
+        <View className="flex-row px-4 mb-4">
+          <View className="flex-1 mr-2">
+            <StatsCard
+              title="แพ็คเกจ"
+              mainValue="10"
+              subValue="กำลังดำเนิน | โปรโมชั่นเพิ่มใหม่"
+              changeValue="7 ↗ 3"
+              changeType="increase"
+              icon="📦"
+              iconBgColor="bg-blue-500"
+            />
+          </View>
+          <View className="flex-1 ml-2">
+            <StatsCard
+              title="ลูกค้า"
+              mainValue="10"
+              subValue="กำลังดำเนิน | โปรโมชั่นเพิ่มใหม่"
+              changeValue="7 ↗ 3"
+              changeType="increase"
+              icon="👥"
+              iconBgColor="bg-blue-500"
+            />
+          </View>
+        </View>
+
+        {/* Chart Section */}
+        <View className="px-4 mb-4">
+          <View className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+            <View className="flex-row items-center justify-between mb-4">
+              <Text className="text-lg font-semibold text-gray-800">📊 ยอดการใช้งานแบบรายวัน</Text>
+              <View className="flex-row items-center bg-gray-50 rounded-lg px-3 py-1">
+                <Text className="text-sm text-gray-600 mr-1">This Week</Text>
                 <Text className="text-gray-400">▼</Text>
-              </TouchableOpacity>
+              </View>
             </View>
-
-            {/* Professional Bar Chart */}
-            <BarChart
-              data={{
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [
-                  {
-                    data: [25, 42, 67, 18, 78, 99, 35],
-                  },
-                ],
-              }}
-              width={screenWidth - 32 - 40} // screenWidth - padding - card padding
-              height={200}
-              yAxisLabel=""
-              yAxisSuffix=""
-              yAxisInterval={1}
-              chartConfig={{
-                backgroundColor: '#ffffff',
-                backgroundGradientFrom: '#ffffff',
-                backgroundGradientTo: '#f8fafc',
-                decimalPlaces: 0,
-                color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(107, 114, 128, ${opacity})`,
-                style: {
-                  borderRadius: 16,
-                },
-                barPercentage: 0.7,
-                fillShadowGradientFrom: '#3b82f6',
-                fillShadowGradientFromOpacity: 0.8,
-                fillShadowGradientTo: '#1d4ed8',
-                fillShadowGradientToOpacity: 0.9,
-              }}
-              verticalLabelRotation={0}
-              showValuesOnTopOfBars={true}
-              fromZero={true}
-              style={{
-                marginVertical: 8,
-                borderRadius: 16,
-              }}
-            />
+            
+            {/* Simple Chart Representation */}
+            <View className="flex-row items-end justify-between h-32 px-2">
+              {[20, 40, 60, 15, 80, 45, 95, 30].map((height, index) => (
+                <View key={index} className="flex-1 items-center mx-1">
+                  <View 
+                    className="bg-blue-500 w-full rounded-t-sm" 
+                    style={{ height: `${height}%` }}
+                  />
+                  {index === 6 && (
+                    <View className="absolute -top-6 bg-blue-500 rounded px-2 py-1">
+                      <Text className="text-white text-xs font-medium">99</Text>
+                    </View>
+                  )}
+                </View>
+              ))}
+            </View>
+            
+            {/* Chart Navigation */}
+            <View className="flex-row justify-center mt-4">
+              <View className="flex-row bg-gray-800 rounded-lg p-1">
+                <Text className="text-white px-2 py-1 text-sm">←</Text>
+                <Text className="text-white px-2 py-1 text-sm">→</Text>
+              </View>
+            </View>
           </View>
-        </View>
-
-        {/* Line Chart */}
-        <View className="px-4">
-          <LineChart />
-        </View>
-
-        {/* Pie Chart */}
-        <View className="px-4">
-          <PieChart />
-        </View>
-
-        {/* Transaction List */}
-        <View className="px-4">
-          <TransactionList />
-        </View>
-
-        {/* Customer List */}
-        <View className="px-4 pb-4">
-          <CustomerList />
         </View>
       </ScrollView>
     </View>
   );
 }
+

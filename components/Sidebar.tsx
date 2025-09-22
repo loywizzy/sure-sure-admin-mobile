@@ -8,7 +8,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isVisible, onClose }: SidebarProps) {
   const slideAnim = useRef(new Animated.Value(-300)).current; // Start off screen
-
+  
   const menuItems = [
     { id: 'dashboard', title: 'แดชบอร์ด', icon: '🏠' },
     { id: 'users', title: 'ผู้ใช้งาน', icon: '👤' },
@@ -36,105 +36,133 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
   }, [isVisible, slideAnim]);
 
   return (
-    <Modal animationType="none" transparent={true} visible={isVisible} onRequestClose={onClose}>
+    <Modal
+      animationType="none"
+      transparent={true}
+      visible={isVisible}
+      onRequestClose={onClose}
+    >
       {/* Overlay Background */}
-      <TouchableOpacity className="flex-1 bg-black/50" activeOpacity={1} onPress={onClose}>
+      <TouchableOpacity 
+        className="flex-1 bg-black/50" 
+        activeOpacity={1}
+        onPress={onClose}
+      >
         {/* Sidebar Container */}
-        <View className="h-full flex-row">
-          <Animated.View
+        <View className="flex-row h-full">
+          <Animated.View 
             style={{
               transform: [{ translateX: slideAnim }],
-            }}>
-            <View className="h-full w-64 bg-white shadow-lg">
+            }}
+          >
+            <View className="bg-white shadow-lg w-64 h-full">
               <TouchableOpacity
                 activeOpacity={1}
                 style={{ flex: 1 }}
-                onPress={(e) => e.stopPropagation()}>
-                <ScrollView className="flex-1">
-                  {/* Close Button */}
-                  <TouchableOpacity
-                    onPress={onClose}
-                    className="absolute right-4 top-4 z-10 p-2"
-                    activeOpacity={0.7}>
-                    <Text className="text-lg text-gray-500">✕</Text>
-                  </TouchableOpacity>
-
-                  {/* Header Section */}
-                  <View className="border-b border-gray-200 p-6 pt-4">
-                    <View className="mb-2 flex-row items-center">
-                      <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-300">
-                        <Text className="font-semibold text-gray-600">T</Text>
-                      </View>
-                      <View>
-                        <Text className="text-xs uppercase tracking-wide text-gray-500">
-                          ADMIN STORE
-                        </Text>
-                        <Text className="text-base font-semibold text-gray-800">TATAR</Text>
-                      </View>
-                    </View>
-                  </View>
-
-                  {/* Main Menu Section */}
-                  <View className="pt-6">
-                    <Text className="mb-4 px-6 text-xs uppercase tracking-wide text-gray-500">
-                      MAIN
-                    </Text>
-
-                    {menuItems.map((item) => (
-                      <TouchableOpacity
-                        key={item.id}
-                        className="mx-4 mb-1 flex-row items-center rounded-lg px-3 py-3"
-                        activeOpacity={0.7}
-                        onPress={() => {
-                          // Handle navigation here
-                          onClose();
-                        }}>
-                        <Text className="mr-3 text-base">{item.icon}</Text>
-                        <Text className="text-sm font-medium text-gray-700">{item.title}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-
-                  {/* Settings Section */}
-                  <View className="pt-6">
-                    <Text className="mb-4 px-6 text-xs uppercase tracking-wide text-gray-500">
-                      SETTINGS
-                    </Text>
-
-                    <TouchableOpacity
-                      className="mx-4 mb-1 flex-row items-center rounded-lg px-3 py-3"
-                      activeOpacity={0.7}>
-                      <Text className="mr-3 text-base">⚙️</Text>
-                      <Text className="text-sm font-medium text-gray-700">ตั้งค่า</Text>
-                      <View className="flex-1" />
-                      <Text className="text-xs text-gray-500">▼</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* Spacer to push bottom items down */}
-                  <View className="min-h-20 flex-1" />
-
-                  {/* Bottom Actions */}
-                  <View className="pb-6 pt-4">
-                    <TouchableOpacity
-                      className="mx-4 mb-2 flex-row items-center rounded-lg px-3 py-3"
-                      activeOpacity={0.7}>
-                      <Text className="mr-3 text-base">❓</Text>
-                      <Text className="text-sm font-medium text-gray-700">ช่วยเหลือ</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      className="mx-4 flex-row items-center rounded-lg px-3 py-3"
-                      activeOpacity={0.7}>
-                      <Text className="mr-3 text-base">🚪</Text>
-                      <Text className="text-sm font-medium text-red-500">ออกจากระบบ</Text>
-                    </TouchableOpacity>
-                  </View>
-                </ScrollView>
+                onPress={(e) => e.stopPropagation()}
+              >
+            <ScrollView className="flex-1">
+              {/* Close Button */}
+              <TouchableOpacity
+                onPress={onClose}
+                className="absolute top-4 right-4 z-10 p-2"
+                activeOpacity={0.7}
+              >
+                <Text className="text-gray-500 text-lg">✕</Text>
               </TouchableOpacity>
+
+              {/* Header Section */}
+              <View className="p-6 border-b border-gray-200 pt-4">
+                <View className="flex-row items-center mb-2">
+                  <View className="w-10 h-10 bg-gray-300 rounded-full mr-3 items-center justify-center">
+                    <Text className="text-gray-600 font-semibold">T</Text>
+                  </View>
+                  <View>
+                    <Text className="text-xs text-gray-500 uppercase tracking-wide">
+                      ADMIN STORE
+                    </Text>
+                    <Text className="text-base font-semibold text-gray-800">
+                      TATAR
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Main Menu Section */}
+              <View className="pt-6">
+                <Text className="px-6 mb-4 text-xs text-gray-500 uppercase tracking-wide">
+                  MAIN
+                </Text>
+                
+                {menuItems.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    className="mx-4 mb-1 px-3 py-3 rounded-lg flex-row items-center"
+                    activeOpacity={0.7}
+                    onPress={() => {
+                      // Handle navigation here
+                      onClose();
+                    }}
+                  >
+                    <Text className="mr-3 text-base">
+                      {item.icon}
+                    </Text>
+                    <Text className="text-gray-700 text-sm font-medium">
+                      {item.title}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Settings Section */}
+              <View className="pt-6">
+                <Text className="px-6 mb-4 text-xs text-gray-500 uppercase tracking-wide">
+                  SETTINGS
+                </Text>
+                
+                <TouchableOpacity
+                  className="mx-4 mb-1 px-3 py-3 rounded-lg flex-row items-center"
+                  activeOpacity={0.7}
+                >
+                  <Text className="mr-3 text-base">⚙️</Text>
+                  <Text className="text-gray-700 text-sm font-medium">
+                    ตั้งค่า
+                  </Text>
+                  <View className="flex-1" />
+                  <Text className="text-gray-500 text-xs">▼</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Spacer to push bottom items down */}
+              <View className="flex-1 min-h-20" />
+              
+              {/* Bottom Actions */}
+              <View className="pb-6 pt-4">
+                <TouchableOpacity
+                  className="mx-4 mb-2 px-3 py-3 rounded-lg flex-row items-center"
+                  activeOpacity={0.7}
+                >
+                  <Text className="mr-3 text-base">❓</Text>
+                  <Text className="text-gray-700 text-sm font-medium">
+                    ช่วยเหลือ
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  className="mx-4 px-3 py-3 rounded-lg flex-row items-center"
+                  activeOpacity={0.7}
+                >
+                  <Text className="mr-3 text-base">🚪</Text>
+                  <Text className="text-red-500 text-sm font-medium">
+                    ออกจากระบบ
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+            </TouchableOpacity>
             </View>
           </Animated.View>
-
+          
           {/* Empty space for the rest of the screen */}
           <View className="flex-1" />
         </View>
