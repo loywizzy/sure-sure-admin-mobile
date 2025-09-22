@@ -1,88 +1,143 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 
 export default function CustomerList() {
-  const customers = [
+  const [query, setQuery] = useState('');
+  const customers = useMemo(() => [
     {
       id: '#00001',
       name: 'Neil Sims',
-      email: 'neil.sims@flowbite.com',
+      role: 'merchant',
+      email: 'email@example.com',
       plan: 'Free Trial',
-      amount: '100',
-      date: '09/02/2588',
+      remain: 100,
+      used: 0,
+      expiredAt: '03/10/2568',
     },
     {
       id: '#00002',
-      name: 'Bonnie Green',
-      email: 'bonnie.green@flowbite.com',
+      name: 'Neil Sims',
+      role: 'merchant',
+      email: 'email@example.com',
       plan: 'Free Trial',
-      amount: '100',
-      date: '09/02/2588',
+      remain: 100,
+      used: 0,
+      expiredAt: '03/10/2568',
     },
     {
       id: '#00003',
       name: 'Neil Sims',
-      email: 'neil.sims@flowbite.com',
+      role: 'merchant',
+      email: 'email@example.com',
       plan: 'Free Trial',
-      amount: '100',
-      date: '09/02/2588',
+      remain: 100,
+      used: 0,
+      expiredAt: '03/10/2568',
     },
-    {
-      id: '#00004',
-      name: 'Neil Sims',
-      email: 'neil.sims@flowbite.com',
-      plan: 'Free Trial',
-      amount: '100',
-      date: '09/02/2588',
-    },
-  ];
+  ], []);
+
+  const filteredCustomers = useMemo(() => {
+    const q = query.trim().toLowerCase().replace('#', '');
+    if (!q) return customers;
+    return customers.filter((c) => {
+      const name = c.name.toLowerCase();
+      const id = c.id.replace('#', '').toLowerCase();
+      return name.includes(q) || id.includes(q);
+    });
+  }, [customers, query]);
 
   return (
-    <View className="rounded-lg border border-gray-100 bg-white shadow-sm">
-      <View className="border-b border-gray-100 p-4">
-        <Text className="text-lg font-semibold text-gray-800">ลูกค้าที่เกี่ยวข้องกับร้านค้า</Text>
+    <View className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <View className="border-b border-gray-100 px-5 py-4">
+        <Text className="text-lg font-extrabold text-gray-900">ลูกค้าที่เปลี่ยนแพ็กเกจล่าสุด</Text>
       </View>
 
-      <ScrollView className="max-h-80">
-        {customers.map((customer, index) => (
-          <TouchableOpacity
-            key={index}
-            className="flex-row items-center border-b border-gray-50 p-4">
-            {/* Avatar */}
-            <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-300">
-              <Text className="text-sm font-semibold text-gray-600">
-                {customer.name
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')}
-              </Text>
+      {/* Search Row */}
+      <View className="px-5 pt-3 pb-2">
+        <View className="flex-row items-center">
+          <View className="mr-3 flex-1">
+            <View className="rounded-full border border-gray-200 bg-gray-50 px-4 py-2">
+              <TextInput
+                value={query}
+                onChangeText={setQuery}
+                placeholder="รหัสลูกค้า , ชื่อ-นามสกุล"
+                placeholderTextColor="#9ca3af"
+                className="text-sm text-gray-800"
+                returnKeyType="search"
+              />
             </View>
+          </View>
 
-            <View className="flex-1">
-              <View className="mb-1 flex-row items-center">
-                <Text className="mr-2 font-medium text-gray-800">{customer.name}</Text>
-                <View className="rounded bg-green-100 px-2 py-1">
-                  <Text className="text-xs text-green-700">{customer.plan}</Text>
+          {/* Clear */}
+          {query.length > 0 && (
+            <TouchableOpacity
+              onPress={() => setQuery('')}
+              className="items-center justify-center rounded-full border border-red-200 bg-white px-3 py-2">
+              <Text className="text-base text-red-500">✕</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
+      <ScrollView className="max-h-96">
+        {filteredCustomers.map((c, idx) => (
+          <TouchableOpacity key={idx} className="px-5 py-1">
+            {/* ID */}
+            <Text className="text-lg font-extrabold tracking-wide text-gray-900 py-3">{c.id}</Text>
+            <View className="flex-row items-start justify-between">
+              
+              {/* Left: Avatar + Info */}
+              <View className="flex-row items-start">
+                
+                {/* Avatar */}
+                <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-gray-200">
+                  
+                  <Text className="text-base font-semibold text-gray-600">
+                    {c.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')}
+                  </Text>
+                </View>
+
+                <View>
+                  <Text className="mb-1 text-base font-semibold text-gray-900">{c.name}</Text>
+                  <Text className="text-xs text-gray-500">{c.role}</Text>
+                  <Text className="text-sm text-blue-600">{c.email}</Text>
                 </View>
               </View>
 
-              <Text className="mb-1 text-sm text-gray-500">
-                {customer.id} {customer.email.split('@')[0]}
-              </Text>
-              <Text className="text-xs text-gray-400">รับชมอง: {customer.date}</Text>
+              {/* Right: Plan */}
+              <Text className="mt-1 text-right text-base font-semibold text-gray-800">{c.plan}</Text>
             </View>
 
-            <View className="items-end">
-              <Text className="font-semibold text-gray-800">{customer.amount}</Text>
-              <Text className="text-xs text-gray-400">฿</Text>
+            {/* Stats rows */}
+            <View className="mt-2">
+              <View className="flex-row items-center justify-between py-1">
+                <Text className="text-sm text-gray-600">จำนวนคงเหลือ</Text>
+                <Text className="text-sm font-semibold text-gray-900">{c.remain}</Text>
+              </View>
+              <View className="flex-row items-center justify-between py-1">
+                <Text className="text-sm text-gray-600">จำนวนที่ใช้ไป</Text>
+                <Text className="text-sm font-semibold text-gray-900">{c.used}</Text>
+              </View>
+              <View className="flex-row items-center justify-between py-1">
+                <Text className="text-sm text-gray-600">หมดอายุ</Text>
+                <Text className="text-sm text-gray-900">{c.expiredAt}</Text>
+              </View>
             </View>
+
+            {/* Divider */}
+            {idx !== customers.length - 1 && (
+              <View className="mt-4 h-px w-full bg-gray-200" />
+            )}
           </TouchableOpacity>
         ))}
       </ScrollView>
 
-      <TouchableOpacity className="flex-row items-center justify-center border-t border-gray-100 p-4">
-        <Text className="mr-2 text-sm font-medium text-blue-500">ดูทั้งหมด - อียะห์นข้อมูล</Text>
-        <Text className="text-blue-500">→</Text>
+      <TouchableOpacity className="flex-row items-center justify-center border-t border-gray-100 px-5 py-4">
+        <Text className="mr-2 text-sm font-medium text-blue-600">ดูทั้งหมด</Text>
+        <Text className="text-blue-600">→</Text>
       </TouchableOpacity>
     </View>
   );

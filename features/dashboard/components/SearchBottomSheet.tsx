@@ -50,46 +50,31 @@ export default function SearchBottomSheet({
       id: 'TRANSACTION_SUCCESSFUL',
       label: 'TRANSACTION SUCCESSFUL',
       value: 'สำเร็จ',
-      color: 'bg-green-100',
-      borderColor: 'border-green-300',
-      textColor: 'text-green-700',
-      icon: '✅',
+      kind: 'success' as const,
     },
     {
       id: 'TRANSACTION_UNSUCCESSFUL',
       label: 'TRANSACTION UNSUCCESSFUL',
       value: 'ไม่สำเร็จ',
-      color: 'bg-red-100',
-      borderColor: 'border-red-300',
-      textColor: 'text-red-700',
-      icon: '❌',
+      kind: 'danger' as const,
     },
     {
       id: 'RECEIVER_NOT_MATCH',
       label: 'RECEIVER NOT MATCH',
       value: 'ไม่สำเร็จ',
-      color: 'bg-red-100',
-      borderColor: 'border-red-300',
-      textColor: 'text-red-700',
-      icon: '👤',
+      kind: 'danger' as const,
     },
     {
       id: 'AMOUNT_LESS_THAN_MINIMUM',
       label: 'AMOUNT LESS THAN MINIMUM',
       value: 'ไม่สำเร็จ',
-      color: 'bg-red-100',
-      borderColor: 'border-red-300',
-      textColor: 'text-red-700',
-      icon: '💰',
+      kind: 'danger' as const,
     },
     {
       id: 'ERROR',
       label: 'ERROR',
       value: 'ไม่สำเร็จ',
-      color: 'bg-red-100',
-      borderColor: 'border-red-300',
-      textColor: 'text-red-700',
-      icon: '⚠️',
+      kind: 'danger' as const,
     },
   ];
 
@@ -145,57 +130,39 @@ export default function SearchBottomSheet({
       }}>
       <BottomSheetView className="flex-1 px-6">
         {/* Header */}
-        <View className="mb-6 flex-row items-center justify-between pt-1">
-          <View>
-            <Text className="text-xl font-semibold text-gray-900">ตัวกรองสถานะ</Text>
-            <Text className="mt-1 text-sm text-gray-500">เลือกเพื่อกรองผลลัพธ์</Text>
-          </View>
-          <TouchableOpacity
-            onPress={onClose}
-            className="rounded-full border border-gray-200 bg-white p-2 shadow-sm">
-            <Text className="text-lg text-gray-500">✕</Text>
-          </TouchableOpacity>
+        <View className="mb-6 items-center pt-1">
+          <Text className="text-2xl font-extrabold text-gray-900">รายการธุรกรรม</Text>
+          <Text className="mt-2 text-base text-gray-500">เลือกธุรกรรมที่ต้องการค้นหา</Text>
         </View>
 
-        {/* Status Options */}
+        {/* Status Options (Pills) */}
         <View className="flex-1">
           {statusOptions.map((option) => {
-            const isSelected = selectedStatus === option.value;
+            const isSuccess = option.kind === 'success';
+            const bgClass = isSuccess ? 'bg-green-50' : 'bg-red-50';
+            const borderClass = isSuccess ? 'border-green-200' : 'border-red-200';
+            const textClass = isSuccess ? 'text-green-600' : 'text-red-600';
+            const shadowColor = isSuccess ? '#22c55e' : '#ef4444';
+
             return (
               <TouchableOpacity
                 key={option.id}
+                activeOpacity={0.9}
                 onPress={() => handleStatusSelect(option.value)}
-                className={`mb-3 flex-row items-center justify-between rounded-xl border px-4 py-4 shadow-sm transition-colors ${
-                  isSelected
-                    ? 'border-blue-400 bg-blue-50'
-                    : 'border-gray-200 bg-white'
-                }`}>
-                <View className="flex-row items-center">
-                  <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                    <Text className="text-base">{option.icon}</Text>
-                  </View>
-                  <View>
-                    <Text className="text-sm font-medium text-gray-900">{option.label}</Text>
-                    <Text className="text-xs text-gray-400">{option.value}</Text>
-                  </View>
-                </View>
-                {isSelected && <Text className="text-sm font-semibold text-blue-600">เลือกแล้ว</Text>}
+                className={`mb-4 rounded-full border ${bgClass} ${borderClass} px-5 py-4 items-center`}
+                style={{
+                  shadowColor,
+                  shadowOffset: { width: 0, height: 6 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 8,
+                  elevation: 5,
+                }}>
+                <Text className={`text-center text-base font-semibold uppercase tracking-wide ${textClass}`}>
+                  {option.label}
+                </Text>
               </TouchableOpacity>
             );
           })}
-
-          {/* Clear Selection */}
-          <TouchableOpacity
-            onPress={() => handleStatusSelect('')}
-            className="mt-4 flex-row items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-4 shadow-sm">
-            <View className="flex-row items-center">
-              <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                <Text className="text-base">🔄</Text>
-              </View>
-              <Text className="font-medium text-gray-700">ล้างการเลือกทั้งหมด</Text>
-            </View>
-            {selectedStatus === '' && <Text className="text-sm font-semibold text-blue-600">เลือกแล้ว</Text>}
-          </TouchableOpacity>
         </View>
       </BottomSheetView>
       </BottomSheetModal>
