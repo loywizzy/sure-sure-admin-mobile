@@ -8,8 +8,7 @@ interface VerificationRecord {
   date: string;
   firstName: string;
   lastName: string;
-  type: string;
-  status: 'สำเร็จ' | 'ไม่สำเร็จ' | 'รอตรวจสอบ';
+  status: 'สำเร็จ' | 'ไม่สำเร็จ' | 'รอตรวจสอบ' | 'บัญชีผู้รับไม่ตรง' | 'จำนวนเงินน้อยกว่าขั้นต่ำ'| 'ไม่สามารถตรวจสอบได้' ;
 }
 
 export default function TransactionList() {
@@ -30,7 +29,6 @@ export default function TransactionList() {
         date: 'Apr 23, 2021',
         firstName: 'สมชาย',
         lastName: 'ใจดี',
-        type: 'ตรวจสอบบัตรประชาชน',
         status: 'สำเร็จ',
       },
       {
@@ -38,7 +36,6 @@ export default function TransactionList() {
         date: 'Apr 23, 2021',
         firstName: 'สมหญิง',
         lastName: 'รักดี',
-        type: 'ตรวจสอบใบหน้า',
         status: 'ไม่สำเร็จ',
       },
       {
@@ -46,7 +43,6 @@ export default function TransactionList() {
         date: 'Apr 18, 2021',
         firstName: 'วิทยา',
         lastName: 'เก่งมาก',
-        type: 'ตรวจสอบใบหน้า',
         status: 'ไม่สำเร็จ',
       },
       {
@@ -54,15 +50,13 @@ export default function TransactionList() {
         date: 'Apr 15, 2021',
         firstName: 'มานะ',
         lastName: 'ขยันดี',
-        type: 'ตรวจสอบใบหน้า',
-        status: 'ไม่สำเร็จ',
+        status: 'บัญชีผู้รับไม่ตรง',
       },
       {
         id: 'TXN2948239489230',
         date: 'Apr 15, 2021',
         firstName: 'ประสิทธิ์',
         lastName: 'รวยมาก',
-        type: 'ตรวจสอบบัตรประชาชน',
         status: 'สำเร็จ',
       },
       {
@@ -70,8 +64,14 @@ export default function TransactionList() {
         date: 'Apr 11, 2021',
         firstName: 'วิชัย',
         lastName: 'สบายใจ',
-        type: 'ตรวจสอบบัตรประชาชน',
-        status: 'สำเร็จ',
+        status: 'จำนวนเงินน้อยกว่าขั้นต่ำ',
+      },
+      {
+        id: 'TXN2948239489430',
+        date: 'Apr 11, 2021',
+        firstName: 'วิชัย',
+        lastName: 'สบายใจ',
+        status: 'จำนวนเงินน้อยกว่าขั้นต่ำ',
       },
     ],
     []

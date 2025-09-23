@@ -61,19 +61,19 @@ export default function SearchBottomSheet({
     {
       id: 'RECEIVER_NOT_MATCH',
       label: 'RECEIVER NOT MATCH',
-      value: 'ไม่สำเร็จ',
+      value: 'บัญชีผู้รับไม่ตรง',
       kind: 'danger' as const,
     },
     {
       id: 'AMOUNT_LESS_THAN_MINIMUM',
       label: 'AMOUNT LESS THAN MINIMUM',
-      value: 'ไม่สำเร็จ',
+      value: 'จำนวนเงินน้อยกว่าขั้นต่ำ',
       kind: 'danger' as const,
     },
     {
       id: 'ERROR',
       label: 'ERROR',
-      value: 'ไม่สำเร็จ',
+      value: 'ไม่สามรถตรวจสอบได้',
       kind: 'danger' as const,
     },
   ];
