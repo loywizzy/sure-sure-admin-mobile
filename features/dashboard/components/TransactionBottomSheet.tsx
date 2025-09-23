@@ -73,7 +73,7 @@ export default function SearchBottomSheet({
     {
       id: 'ERROR',
       label: 'ERROR',
-      value: 'ไม่สามรถตรวจสอบได้',
+      value: 'ไม่สามารถตรวจสอบได้',
       kind: 'danger' as const,
     },
   ];

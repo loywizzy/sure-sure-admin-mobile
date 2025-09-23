@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
-import SearchBottomSheet from './SearchBottomSheet';
+import SearchBottomSheet from './TransactionBottomSheet';
 import CrossPlatformDatePicker from '../../../components/ui/CrossPlatformDatePicker';
 
 interface VerificationRecord {
