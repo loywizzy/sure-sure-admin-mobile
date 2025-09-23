@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import SearchBottomSheet from './TransactionBottomSheet';
 import CrossPlatformDatePicker from '../../../components/ui/CrossPlatformDatePicker';
+import { router } from 'expo-router';
 
 interface VerificationRecord {
   id: string;
@@ -265,7 +266,10 @@ export default function TransactionList() {
           )}
         </ScrollView>
 
-        <TouchableOpacity className="flex-row items-center justify-center border-t border-gray-100 py-4">
+        <TouchableOpacity
+          className="flex-row items-center justify-center border-t border-gray-100 py-4"
+          onPress={() => router.push('/transactions')}
+        >
           <Text className="mr-2 text-sm font-medium text-blue-500">ดูทั้งหมด</Text>
           <Text className="text-blue-500">→</Text>
         </TouchableOpacity>
