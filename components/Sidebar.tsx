@@ -16,7 +16,7 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
     { id: 'users', title: 'ผู้ใช้งาน', icon: '👤' },
     { id: 'transactions', title: 'ธุรกรรม', icon: '📄' },
     { id: 'branches', title: 'สาขาร้านค้า', icon: '🏪' },
-    { id: 'packages', title: 'แพ็คเกจ', icon: '📊' },
+    { id: 'packages', title: 'แพ็คเกจ', icon: '📦' },
   ];
 
   useEffect(() => {
@@ -96,6 +96,9 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
                           }
                           if (item.id === 'branches') {
                             router.push('/branches');
+                          }
+                          if (item.id === 'packages') {
+                            router.push('/packages');
                           }
                           onClose();
                         }}>
