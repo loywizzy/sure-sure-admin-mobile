@@ -100,6 +100,9 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
                           if (item.id === 'packages') {
                             router.push('/packages');
                           }
+                          if (item.id === 'users') {
+                            router.push('/users');
+                          }
                           onClose();
                         }}>
                         <Text className="mr-3 text-base">{item.icon}</Text>

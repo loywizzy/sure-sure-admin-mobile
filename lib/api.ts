@@ -1,10 +1,11 @@
 import { getJSON, setJSON } from './storage';
-import { PackageItem, TransactionItem, BranchItem } from './types';
+import { PackageItem, TransactionItem, BranchItem, UserItem } from './types';
 
 const KEYS = {
   packages: 'app.packages',
   transactions: 'app.transactions',
   branches: 'app.branches',
+  users: 'app.users',
 } as const;
 
 async function delay(ms = 250) {
@@ -13,16 +14,21 @@ async function delay(ms = 250) {
 
 // Seed data on first load
 async function ensureSeeds(): Promise<void> {
-  const [pkgs, txns, brs] = await Promise.all([
+  const [pkgs, txns, brs, users] = await Promise.all([
     getJSON<PackageItem[] | null>(KEYS.packages, null),
     getJSON<TransactionItem[] | null>(KEYS.transactions, null),
     getJSON<BranchItem[] | null>(KEYS.branches, null),
+    getJSON<UserItem[] | null>(KEYS.users, null),
   ]);
 
   if (!pkgs) {
     const seed: PackageItem[] = [
       { code: '00002', name: 'Basic', price: 225, maxQuota: 500, remaining: 999982, durationDays: 30, active: true },
       { code: '00003', name: 'Plus', price: 2000, maxQuota: 5000, remaining: 1000000, durationDays: 30, active: false },
+      { code: '00004', name: 'Advance', price: 5000, maxQuota: 500, remaining: 999982, durationDays: 30, active: true },
+      { code: '00005', name: 'Pro', price: 10000, maxQuota: 5000, remaining: 1000000, durationDays: 30, active: false },
+      { code: '00006', name: 'Promax', price: 50000, maxQuota: 500, remaining: 999982, durationDays: 30, active: true },
+      { code: '00007', name: 'Ultimate', price: 100000, maxQuota: 5000, remaining: 1000000, durationDays: 30, active: false },
     ];
     await setJSON(KEYS.packages, seed);
   }
@@ -43,6 +49,51 @@ async function ensureSeeds(): Promise<void> {
       { id: '02', code: '04', roomName: 'สาขาเชียงใหม่', customerName: 'John Wick', usedQuota: 1500, minReceived: 3454 },
     ];
     await setJSON(KEYS.branches, seed);
+  }
+
+  if (!users) {
+    const seed: UserItem[] = [
+      {
+        id: '000001',
+        code: '01',
+        firstName: 'TATAR',
+        lastName: '',
+        email: 'tatarkub@gmail.com',
+        role: 'merchant',
+        active: true,
+        packageCode: '00002',
+        usedCount: 0,
+        remaining: 100,
+        expiresAt: new Date('2025-03-10').toISOString(),
+      },
+      {
+        id: '000002',
+        code: '02',
+        firstName: 'John',
+        lastName: 'John',
+        email: 'john@example.com',
+        role: 'merchant',
+        active: true,
+        packageCode: '00002',
+        usedCount: 0,
+        remaining: 100,
+        expiresAt: new Date('2025-03-10').toISOString(),
+      },
+      {
+        id: '000003',
+        code: '03',
+        firstName: 'Adobe',
+        lastName: 'S.',
+        email: 'adobe@example.com',
+        role: 'merchant',
+        active: true,
+        packageCode: '00003',
+        usedCount: 0,
+        remaining: 100,
+        expiresAt: new Date('2025-03-10').toISOString(),
+      },
+    ];
+    await setJSON(KEYS.users, seed);
   }
 }
 
@@ -92,6 +143,27 @@ export async function listBranches(): Promise<BranchItem[]> {
   await ensureSeeds();
   await delay();
   return await getJSON<BranchItem[]>(KEYS.branches, []);
+}
+
+// Users API
+export async function listUsers(): Promise<UserItem[]> {
+  await ensureSeeds();
+  await delay();
+  return await getJSON<UserItem[]>(KEYS.users, []);
+}
+
+export async function getUserById(id: string): Promise<UserItem | undefined> {
+  const users = await listUsers();
+  return users.find((u) => u.id === id);
+}
+
+export async function updateUser(id: string, patch: Partial<Pick<UserItem, 'packageCode' | 'active'>>): Promise<void> {
+  const users = await listUsers();
+  const idx = users.findIndex((u) => u.id === id);
+  if (idx === -1) return;
+  users[idx] = { ...users[idx], ...patch };
+  await setJSON(KEYS.users, users);
+  await delay(100);
 }
 
 

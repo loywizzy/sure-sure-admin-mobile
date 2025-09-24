@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export default function CustomerList() {
+  const router = useRouter();
   const [query, setQuery] = useState('');
   const customers = useMemo(() => [
     {
@@ -135,7 +137,7 @@ export default function CustomerList() {
         ))}
       </ScrollView>
 
-      <TouchableOpacity className="flex-row items-center justify-center border-t border-gray-100 px-5 py-4">
+      <TouchableOpacity className="flex-row items-center justify-center border-t border-gray-100 px-5 py-4" onPress={() => router.push('/users')}>
         <Text className="mr-2 text-sm font-medium text-blue-600">ดูทั้งหมด</Text>
         <Text className="text-blue-600">→</Text>
       </TouchableOpacity>

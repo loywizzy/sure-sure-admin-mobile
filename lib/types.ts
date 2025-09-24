@@ -37,4 +37,20 @@ export type BranchItem = {
   minReceived: number;
 };
 
+export type UserRole = 'merchant' | 'admin';
+
+export type UserItem = {
+  id: string; // like 000001
+  code: string; // short code like 01
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: UserRole;
+  active: boolean;
+  packageCode: string; // link to PackageItem.code
+  usedCount: number;
+  remaining: number;
+  expiresAt: string; // ISO string
+};
+
 
