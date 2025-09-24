@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, Dimensions, TouchableOpacity } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
+import PieChartMonthSheet from './PieChartMonthSheet';
 
 export default function PieChartComponent() {
   const screenWidth = Dimensions.get('window').width;
+  const [pickerVisible, setPickerVisible] = useState(false);
+  const now = new Date();
+  const [selected, setSelected] = useState({ monthIndex: now.getMonth(), year: now.getFullYear() });
 
-  const data = [
+  const data = useMemo(() => [
     {
       name: 'ลูกค้าใหม่',
       population: 25,
@@ -48,7 +52,12 @@ export default function PieChartComponent() {
       legendFontColor: '#374151',
       legendFontSize: 12,
     },
-  ];
+  ], [selected]);
+
+  const monthLabel = useMemo(() => {
+    const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    return `${months[selected.monthIndex]} ${selected.year}`;
+  }, [selected]);
 
   return (
     <View
@@ -63,8 +72,8 @@ export default function PieChartComponent() {
       <View className="mb-4 flex-row items-center justify-between">
         <Text className="text-lg font-bold text-gray-800">สถิติโดยรวมแบบรายเดือน</Text>
         <View className="flex-row items-center">
-          <TouchableOpacity className="mr-3 flex-row items-center rounded-lg bg-gray-50 px-3 py-2">
-            <Text className="mr-1 text-sm text-gray-600">Jan 2025</Text>
+          <TouchableOpacity className="mr-3 flex-row items-center rounded-lg bg-gray-50 px-3 py-2" onPress={() => setPickerVisible(true)}>
+            <Text className="mr-1 text-sm text-gray-600">{monthLabel}</Text>
             <Text className="text-gray-400">▼</Text>
           </TouchableOpacity>
           <Text className="font-bold text-blue-500">↗ 98%</Text>
@@ -93,6 +102,15 @@ export default function PieChartComponent() {
         hasLegend={true}
         style={{
           borderRadius: 16,
+        }}
+      />
+      <PieChartMonthSheet
+        isVisible={pickerVisible}
+        onClose={() => setPickerVisible(false)}
+        value={selected}
+        onSelect={(monthIndex, year) => {
+          setSelected({ monthIndex, year });
+          setPickerVisible(false);
         }}
       />
     </View>
