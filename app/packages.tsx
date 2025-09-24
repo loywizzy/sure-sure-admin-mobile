@@ -1,21 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { router } from 'expo-router';
-import { getPackages, subscribe } from '../features/packages/store';
-
-type PackageItem = ReturnType<typeof getPackages>[number];
+import { useQuery } from '@tanstack/react-query';
+import { listPackages } from '../lib/api';
+import type { PackageItem } from '../lib/types';
 
 export default function PackagesScreen() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [query, setQuery] = useState('');
-  const [items, setItems] = useState<PackageItem[]>(getPackages());
-
-  useEffect(() => {
-    const unsub = subscribe(() => setItems(getPackages()));
-    return unsub;
-  }, []);
+  const { data: items = [], isLoading } = useQuery({ queryKey: ['packages'], queryFn: listPackages });
 
   const filtered = useMemo(() => {
     if (!query.trim()) return items;
@@ -66,6 +61,11 @@ export default function PackagesScreen() {
       <Sidebar isVisible={isSidebarVisible} onClose={handleSidebarClose} />
 
       <ScrollView className="flex-1 px-4 pt-3">
+        {isLoading && (
+          <View className="mb-4 rounded-xl bg-white p-4">
+            <Text className="text-gray-500">กำลังโหลด...</Text>
+          </View>
+        )}
         {/* Search bar */}
         <View className="mb-4 flex-row items-center">
           <View className="flex-1 rounded-2xl border border-gray-200 bg-white px-3 py-2">

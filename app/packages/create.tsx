@@ -2,47 +2,63 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Switch, Modal } from 'react-native';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
-import { getNextPackageCode, upsertPackage } from '../../features/packages/store';
+import { getNextPackageCode, upsertPackage } from '../../lib/api';
 import { router } from 'expo-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { PackageItem } from '../../lib/types';
+
+const schema = z.object({
+  name: z.string().min(1, 'กรุณากรอกชื่อแพ็คเกจ'),
+  price: z.string().regex(/^\d+(?:\.\d{1,2})?$/, 'กรุณากรอกราคาให้ถูกต้อง'),
+  maxQuota: z.string().regex(/^\d+$/, 'กรุณากรอกโควต้าสูงสุดให้ถูกต้อง'),
+  remaining: z.string().regex(/^\d+$/, 'กรุณากรอกคงเหลือให้ถูกต้อง'),
+  durationDays: z.string().regex(/^\d+$/, 'กรุณากรอกจำนวนวันใช้งานให้ถูกต้อง'),
+  active: z.boolean(),
+});
+
+type FormValues = z.infer<typeof schema>;
 
 export default function CreatePackageScreen() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [result, setResult] = useState<{ visible: boolean; success?: boolean; message: string }>({ visible: false, message: '' });
+  const queryClient = useQueryClient();
+  const { handleSubmit, setValue, watch } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { name: '', price: '', maxQuota: '', active: true, remaining: '', durationDays: '' },
+  });
 
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [maxQuota, setMaxQuota] = useState('');
-  const [active, setActive] = useState(true);
-  const [remaining, setRemaining] = useState('');
-  const [durationDays, setDurationDays] = useState('');
+  const active = watch('active');
+  const name = watch('name');
+  const price = watch('price');
+  const maxQuota = watch('maxQuota');
+  const remaining = watch('remaining');
+  const durationDays = watch('durationDays');
 
-  const validate = (): string | null => {
-    if (!name.trim()) return 'กรุณากรอกชื่อแพ็คเกจ';
-    if (!price || isNaN(Number(price))) return 'กรุณากรอกราคาให้ถูกต้อง';
-    if (!maxQuota || isNaN(Number(maxQuota))) return 'กรุณากรอกโควต้าสูงสุดให้ถูกต้อง';
-    if (!remaining || isNaN(Number(remaining))) return 'กรุณากรอกคงเหลือให้ถูกต้อง';
-    if (!durationDays || isNaN(Number(durationDays))) return 'กรุณากรอกจำนวนวันใช้งานให้ถูกต้อง';
-    return null;
-  };
+  const mutation = useMutation({
+    mutationFn: async (values: FormValues) => {
+      const code = await getNextPackageCode();
+      const dto: PackageItem = {
+        code,
+        name: values.name.trim(),
+        price: Number(values.price),
+        maxQuota: Number(values.maxQuota),
+        remaining: Number(values.remaining),
+        durationDays: Number(values.durationDays),
+        active: values.active,
+      };
+      await upsertPackage(dto);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['packages'] });
+      setResult({ visible: true, success: true, message: 'สร้างแพ็คเกจสำเร็จ' });
+    },
+    onError: () => setResult({ visible: true, success: false, message: 'ไม่สามารถดำเนินการได้\nโปรดลองอีกครั้ง' }),
+  });
 
-  const submit = () => {
-    const error = validate();
-    if (error) {
-      setResult({ visible: true, message: 'ไม่สามารถดำเนินการได้\nโปรดลองอีกครั้ง' });
-      return;
-    }
-    const code = getNextPackageCode();
-    upsertPackage({
-      code,
-      name: name.trim(),
-      price: Number(price),
-      maxQuota: Number(maxQuota),
-      remaining: Number(remaining),
-      durationDays: Number(durationDays),
-      active,
-    });
-    setResult({ visible: true, success: true, message: 'สร้างแพ็คเกจสำเร็จ' });
-  };
+  const onSubmit = (values: FormValues) => mutation.mutate(values);
 
   const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
     <View className="mb-5">
@@ -61,24 +77,24 @@ export default function CreatePackageScreen() {
           <Text className="mb-4 text-2xl font-extrabold text-gray-900">สร้างแพ็คเกจ</Text>
 
           <Field label="ชื่อแพ็คเกจ">
-            <TextInput value={name} onChangeText={setName} placeholder="Advance" placeholderTextColor="#9ca3af" className="border-b border-gray-200 pb-2 text-base text-gray-900" />
+            <TextInput value={name} onChangeText={(t) => setValue('name', t)} placeholder="Advance" placeholderTextColor="#9ca3af" className="border-b border-gray-200 pb-2 text-base text-gray-900" />
           </Field>
           <Field label="ราคา">
-            <TextInput value={price} onChangeText={(t) => setPrice(t.replace(/[^0-9.]/g, ''))} keyboardType="numeric" placeholder="0.00" placeholderTextColor="#9ca3af" className="border-b border-gray-200 pb-2 text-base text-gray-900" />
+            <TextInput value={price} onChangeText={(t) => setValue('price', t.replace(/[^0-9.]/g, ''))} keyboardType="numeric" placeholder="0.00" placeholderTextColor="#9ca3af" className="border-b border-gray-200 pb-2 text-base text-gray-900" />
           </Field>
           <Field label="โควต้าสูงสุด">
-            <TextInput value={maxQuota} onChangeText={(t) => setMaxQuota(t.replace(/[^0-9]/g, ''))} keyboardType="numeric" placeholder="0" placeholderTextColor="#9ca3af" className="border-b border-gray-200 pb-2 text-base text-gray-900" />
+            <TextInput value={maxQuota} onChangeText={(t) => setValue('maxQuota', t.replace(/[^0-9]/g, ''))} keyboardType="numeric" placeholder="0" placeholderTextColor="#9ca3af" className="border-b border-gray-200 pb-2 text-base text-gray-900" />
           </Field>
           <Field label="สถานะ">
             <View className="flex-row items-center justify-end">
-              <Switch value={active} onValueChange={setActive} />
+              <Switch value={active} onValueChange={(v) => setValue('active', v)} />
             </View>
           </Field>
           <Field label="จำนวนการขาย">
-            <TextInput value={remaining} onChangeText={(t) => setRemaining(t.replace(/[^0-9]/g, ''))} keyboardType="numeric" placeholder="0" placeholderTextColor="#9ca3af" className="border-b border-gray-200 pb-2 text-base text-gray-900" />
+            <TextInput value={remaining} onChangeText={(t) => setValue('remaining', t.replace(/[^0-9]/g, ''))} keyboardType="numeric" placeholder="0" placeholderTextColor="#9ca3af" className="border-b border-gray-200 pb-2 text-base text-gray-900" />
           </Field>
           <Field label="จำนวนวันใช้งาน">
-            <TextInput value={durationDays} onChangeText={(t) => setDurationDays(t.replace(/[^0-9]/g, ''))} keyboardType="numeric" placeholder="0" placeholderTextColor="#9ca3af" className="border-b border-gray-200 pb-2 text-base text-gray-900" />
+            <TextInput value={durationDays} onChangeText={(t) => setValue('durationDays', t.replace(/[^0-9]/g, ''))} keyboardType="numeric" placeholder="0" placeholderTextColor="#9ca3af" className="border-b border-gray-200 pb-2 text-base text-gray-900" />
           </Field>
 
           <View className="mt-2 flex-row justify-between">
@@ -86,7 +102,7 @@ export default function CreatePackageScreen() {
               <Text className="mr-2 text-red-500">✕</Text>
               <Text className="text-base font-medium text-red-500">ยกเลิก</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="ml-3 flex-1 flex-row items-center justify-center rounded-lg bg-blue-600 py-3" onPress={submit}>
+            <TouchableOpacity className="ml-3 flex-1 flex-row items-center justify-center rounded-lg bg-blue-600 py-3" onPress={handleSubmit(onSubmit)}>
               <Text className="mr-2 text-white">✓</Text>
               <Text className="text-base font-semibold text-white">ยืนยัน</Text>
             </TouchableOpacity>

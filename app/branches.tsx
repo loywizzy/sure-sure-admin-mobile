@@ -2,15 +2,11 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, useWindowDimensions } from 'react-native';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
+import { useQuery } from '@tanstack/react-query';
+import { listBranches } from '../lib/api';
+import type { BranchItem } from '../lib/types';
 
-type Branch = {
-  id: string; // สาขา
-  code: string; // รหัสลูกค้า
-  roomName: string; // ชื่อห้อง
-  customerName: string; // ชื่อ-นามสกุล
-  usedQuota: number; // โควต้าที่ใช้
-  minReceived: number; // จำนวนเงินขั้นต่ำที่ได้รับ
-};
+type Branch = BranchItem;
 
 export default function BranchesScreen() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
@@ -18,27 +14,7 @@ export default function BranchesScreen() {
   const { width } = useWindowDimensions();
   const columns = width >= 700 ? 2 : 1; // มือถือ = 1 คอลัมน์, จอใหญ่ = 2 คอลัมน์
 
-  const branches: Branch[] = useMemo(
-    () => [
-      {
-        id: '01',
-        code: '01',
-        roomName: 'สาขาหลัก',
-        customerName: 'TATAR',
-        usedQuota: 0,
-        minReceived: 0,
-      },
-      {
-        id: '02',
-        code: '04',
-        roomName: 'สาขาเชียงใหม่',
-        customerName: 'John Wick',
-        usedQuota: 1500,
-        minReceived: 3454,
-      },
-    ],
-    []
-  );
+  const { data: branches = [], isLoading } = useQuery({ queryKey: ['branches'], queryFn: listBranches });
 
   const filtered = useMemo(() => {
     if (!query.trim()) return branches;
@@ -95,6 +71,11 @@ export default function BranchesScreen() {
       <Sidebar isVisible={isSidebarVisible} onClose={handleSidebarClose} />
 
       <ScrollView className="flex-1 px-4 pt-3">
+        {isLoading && (
+          <View className="mb-4 rounded-xl bg-white p-4">
+            <Text className="text-gray-500">กำลังโหลด...</Text>
+          </View>
+        )}
         {/* Search bar */}
         <View className="mb-4 flex-row items-center">
           <View className="flex-1 rounded-2xl border border-gray-200 bg-white px-3 py-2">

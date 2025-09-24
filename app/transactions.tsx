@@ -4,18 +4,11 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import SearchBottomSheet from '../features/dashboard/components/TransactionBottomSheet';
 import CrossPlatformDatePicker from '../components/ui/CrossPlatformDatePicker';
+import { useQuery } from '@tanstack/react-query';
+import { listTransactions } from '../lib/api';
+import type { TransactionItem, TransactionStatus } from '../lib/types';
 
-type Txn = {
-  id: string;
-  customerNo: string;
-  firstName: string;
-  lastName: string;
-  createdAt: Date;
-  bank: string;
-  errorMsg?: string;
-  transferId: string;
-  status: 'TRANSACTION SUCCESSFUL' | 'TRANSACTION UNSUCCESSFUL' | 'RECEIVER NOT MATCH' | 'AMOUNT LESS THAN MINIMUM' | 'ERROR';
-};
+type Txn = TransactionItem;
 
 export default function TransactionsScreen() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
@@ -27,57 +20,12 @@ export default function TransactionsScreen() {
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>('');
 
-  const txns: Txn[] = useMemo(
-    () => [
-      {
-        id: '000001',
-        customerNo: '59',
-        firstName: 'John',
-        lastName: 'Kub',
-        createdAt: new Date('2021-04-23'),
-        bank: 'KBank',
-        transferId: '#88201',
-        status: 'TRANSACTION SUCCESSFUL',
-      },
-      {
-        id: '000002',
-        customerNo: '59',
-        firstName: 'สมหญิง',
-        lastName: 'รักดี',
-        createdAt: new Date('2021-04-18'),
-        bank: 'KBank',
-        errorMsg: 'Amount < Minimum',
-        transferId: '#88201',
-        status: 'ERROR',
-      },
-      {
-        id: '000002',
-        customerNo: '59',
-        firstName: 'สมหญิง',
-        lastName: 'รักดี',
-        createdAt: new Date('2021-04-18'),
-        bank: 'KBank',
-        errorMsg: 'Amount < Minimum',
-        transferId: '#88201',
-        status: 'TRANSACTION UNSUCCESSFUL',
-      },
-      {
-        id: '000002',
-        customerNo: '59',
-        firstName: 'สมหญิง',
-        lastName: 'รักดี',
-        createdAt: new Date('2021-04-18'),
-        bank: 'KBank',
-        errorMsg: 'Amount < Minimum',
-        transferId: '#88201',
-        status: 'RECEIVER NOT MATCH',
-      },
-    ],
-    []
-  );
+  const { data: txns = [], isLoading } = useQuery({ queryKey: ['transactions'], queryFn: listTransactions });
+
+  type DisplayTxn = Omit<Txn, 'createdAt'> & { createdAt: Date };
 
   const list = useMemo(() => {
-    let result = txns;
+    let result: DisplayTxn[] = txns.map((t) => ({ ...t, createdAt: new Date(t.createdAt) }));
     // Name filter (first + last)
     if (searchName) {
       const q = searchName.toLowerCase();
@@ -85,7 +33,7 @@ export default function TransactionsScreen() {
     }
     // Status filter: map Thai label from bottom sheet to our enum
     if (selectedStatus) {
-      const thaiToEnglish: Record<string, Txn['status']> = {
+      const thaiToEnglish: Record<string, TransactionStatus> = {
         'สำเร็จ': 'TRANSACTION SUCCESSFUL',
         'ไม่สำเร็จ': 'TRANSACTION UNSUCCESSFUL',
         'บัญชีผู้รับไม่ตรง': 'RECEIVER NOT MATCH',
@@ -129,7 +77,7 @@ export default function TransactionsScreen() {
     </View>
   );
 
-  const renderCard = (t: Txn, idx: number) => {
+  const renderCard = (t: DisplayTxn, idx: number) => {
     const tone = t.status === 'TRANSACTION SUCCESSFUL' ? 'success' : 'danger';
     return (
       <View
@@ -179,6 +127,11 @@ export default function TransactionsScreen() {
       <Sidebar isVisible={isSidebarVisible} onClose={handleSidebarClose} />
 
       <ScrollView className="flex-1 px-4 pt-3">
+        {isLoading && (
+          <View className="mb-4 rounded-xl bg-white p-4">
+            <Text className="text-gray-500">กำลังโหลด...</Text>
+          </View>
+        )}
         {/* Search Section - like Dashboard */}
         <View className="mb-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-md">
           {/* Row 1: Start + End date pills and clear */}
