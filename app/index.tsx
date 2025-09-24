@@ -2,6 +2,8 @@ import '@expo/metro-runtime';
 import { Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { useState } from 'react';
 import { BarChart } from 'react-native-chart-kit';
+import WeekBottomSheet from '../features/dashboard/components/WeekBottomSheet';
+import { useWeekStore } from '../lib/store';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import StatsCard from '../features/dashboard/components/StatsCard';
@@ -13,6 +15,13 @@ import CustomerList from '../features/dashboard/components/CustomerList';
 export default function Index() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const screenWidth = Dimensions.get('window').width;
+  const { weekStartISO, shiftWeeks, setWeekStart } = useWeekStore();
+  const [showWeekPicker, setShowWeekPicker] = useState(false);
+
+  const weekStart = new Date(weekStartISO);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const weekLabel = `${weekStart.toLocaleDateString('th-TH', { day: '2-digit', month: 'short' })}–${weekEnd.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' })}`;
 
   const handleMenuPress = () => {
     setIsSidebarVisible(true);
@@ -113,10 +122,17 @@ export default function Index() {
                 </View>
                 <Text className="text-lg font-bold text-gray-800">ยอดการใช้งานแบบรายวัน</Text>
               </View>
-              <TouchableOpacity className="flex-row items-center rounded-lg bg-gray-50 px-3 py-2">
-                <Text className="mr-1 text-sm text-gray-600">This Week</Text>
-                <Text className="text-gray-400">▼</Text>
-              </TouchableOpacity>
+              <View className="flex-row items-center">
+                <TouchableOpacity className="mr-2 rounded-lg bg-gray-50 px-3 py-2" onPress={() => shiftWeeks(-1)}>
+                  <Text className="text-gray-600">‹</Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="rounded-lg bg-gray-50 px-3 py-2" onPress={() => setShowWeekPicker(true)}>
+                  <Text className="mr-1 text-sm text-gray-600">{weekLabel}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="ml-2 rounded-lg bg-gray-50 px-3 py-2" onPress={() => shiftWeeks(1)}>
+                  <Text className="text-gray-600">›</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* Professional Bar Chart */}
@@ -181,6 +197,15 @@ export default function Index() {
           <CustomerList />
         </View>
       </ScrollView>
+      <WeekBottomSheet
+        isVisible={showWeekPicker}
+        onClose={() => setShowWeekPicker(false)}
+        onSelect={(iso) => {
+          setWeekStart(iso);
+          setShowWeekPicker(false);
+        }}
+        currentWeekISO={weekStartISO}
+      />
     </View>
   );
 }

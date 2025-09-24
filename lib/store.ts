@@ -70,4 +70,32 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 }));
 
+// Week selection store
+type WeekState = {
+  weekStartISO: string; // Monday 00:00:00.000 local
+  setThisWeek: () => void;
+  shiftWeeks: (delta: number) => void; // -1 previous, +1 next
+  setWeekStart: (iso: string) => void;
+};
+
+function getMonday(d: Date): Date {
+  const date = new Date(d);
+  const day = date.getDay(); // 0 Sun ... 6 Sat
+  const diff = (day === 0 ? -6 : 1) - day; // move to Monday
+  date.setDate(date.getDate() + diff);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+export const useWeekStore = create<WeekState>((set, get) => ({
+  weekStartISO: getMonday(new Date()).toISOString(),
+  setThisWeek: () => set({ weekStartISO: getMonday(new Date()).toISOString() }),
+  shiftWeeks: (delta) => {
+    const start = new Date(get().weekStartISO);
+    start.setDate(start.getDate() + delta * 7);
+    set({ weekStartISO: start.toISOString() });
+  },
+  setWeekStart: (iso) => set({ weekStartISO: new Date(iso).toISOString() }),
+}));
+
 
