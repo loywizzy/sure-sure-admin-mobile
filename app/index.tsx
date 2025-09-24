@@ -7,10 +7,11 @@ import { useWeekStore } from '../lib/store';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import StatsCard from '../features/dashboard/components/StatsCard';
-import LineChart from '../features/dashboard/components/LineChart';
+// Removed LineChart in favor of MonthlyRevenueCard
 import PieChart from '../features/dashboard/components/PieChart';
 import TransactionList from '../features/dashboard/components/TransactionList';
 import CustomerList from '../features/dashboard/components/CustomerList';
+import MonthlyRevenueCard from '../features/dashboard/components/MonthlyRevenueCard';
 
 export default function Index() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
@@ -177,13 +178,15 @@ export default function Index() {
           </View>
         </View>
 
-        {/* Line Chart */}
-        <View className="px-4">
-          <LineChart />
+        {/* Monthly Revenue (แทน Line Chart เดิม) */}
+        <View className="px-4 pt-2 mb-4">
+          <MonthlyRevenueCard />
         </View>
 
+        {/* Spacer or additional cards can go here */}
+
         {/* Pie Chart */}
-        <View className="px-4">
+        <View className="px-4 mb-4">
           <PieChart />
         </View>
 
