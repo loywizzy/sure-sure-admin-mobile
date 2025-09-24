@@ -32,8 +32,8 @@ export default function TransactionsScreen() {
       {
         id: '000001',
         customerNo: '59',
-        firstName: 'สมชาย',
-        lastName: 'ใจดี',
+        firstName: 'John',
+        lastName: 'Kub',
         createdAt: new Date('2021-04-23'),
         bank: 'KBank',
         transferId: '#88201',
