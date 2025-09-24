@@ -48,10 +48,10 @@ export default function Index() {
           <View className="mb-4">
             <StatsCard
               title="รายได้เดือนนี้"
-              mainValue="150,000฿"
+              mainValue={new Intl.NumberFormat('th-TH').format(640405) + '฿'}
               subItems={[
-                { label: 'รายได้เดือนที่แล้ว', value: '15,000฿', color: 'red' },
-                { label: 'น้อยกว่าเดือนที่แล้ว', value: '10,000฾', color: 'red' },
+                { label: 'รายได้เดือนที่แล้ว', value: new Intl.NumberFormat('th-TH').format(590000) + '฿', color: 'green' },
+                { label: 'น้อยกว่าเดือนที่แล้ว', value: '0฿', color: 'red' },
               ]}
               icon="💰"
               iconBgColor="bg-gradient-to-r from-emerald-500 to-emerald-600"
@@ -64,10 +64,10 @@ export default function Index() {
             <View className="mr-1 flex-1">
               <StatsCard
                 title="รายการตรวจสอบ"
-                mainValue="10"
+                mainValue={String(32)}
                 subItems={[
-                  { label: 'ถูกต้อง', value: '7', color: 'green' },
-                  { label: 'ถูกปฏิเสธ', value: '3', color: 'red' },
+                  { label: 'ถูกต้อง', value: String(24), color: 'green' },
+                  { label: 'ถูกปฏิเสธ', value: String(8), color: 'red' },
                 ]}
                 icon="✅"
                 iconBgColor="bg-gradient-to-r from-blue-500 to-blue-600"
@@ -77,10 +77,10 @@ export default function Index() {
             <View className="mx-1 flex-1">
               <StatsCard
                 title="แพ็คเกจ"
-                mainValue="10"
+                mainValue={String(12)}
                 subItems={[
-                  { label: 'กำลังใช้งาน', value: '7', color: 'green' },
-                  { label: 'ไม่ได้ใช้งานแล้ว', value: '3', color: 'red' },
+                  { label: 'กำลังใช้งาน', value: String(9), color: 'green' },
+                  { label: 'ไม่ได้ใช้งานแล้ว', value: String(3), color: 'red' },
                 ]}
                 icon="📦"
                 iconBgColor="bg-gradient-to-r from-purple-500 to-purple-600"
@@ -90,10 +90,10 @@ export default function Index() {
             <View className="ml-1 flex-1">
               <StatsCard
                 title="ลูกค้า"
-                mainValue="10"
+                mainValue={String(256)}
                 subItems={[
-                  { label: 'กำลังใช้งาน', value: '7', color: 'green' },
-                  { label: 'ไม่ได้ใช้งานแล้ว', value: '3', color: 'red' },
+                  { label: 'กำลังใช้งาน', value: String(198), color: 'green' },
+                  { label: 'หมดอายุ', value: String(58), color: 'red' },
                 ]}
                 icon="👥"
                 iconBgColor="bg-gradient-to-r from-orange-500 to-orange-600"
