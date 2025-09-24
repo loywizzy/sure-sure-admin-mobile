@@ -53,4 +53,32 @@ export type UserItem = {
   expiresAt: string; // ISO string
 };
 
+// DB types based on ERD (minimal fields we use)
+export type DBPackage = {
+  id: number; // PK
+  packagename: string;
+  packageprice: number; // numeric(10,2)
+  quotalimit: number; // numeric/int (total quota)
+  duration?: number; // days, optional if exists
+  isactive: number; // 1 active, 0 inactive
+  createddate?: string;
+  updateddate?: string;
+};
+
+export type DBUser = {
+  id: number; // PK
+  merchantid?: number | null;
+  packageid: number;
+  email: string;
+  usertype: 'merchant' | 'admin';
+  isactive: number; // 1/0
+  nameen?: string | null;
+  nameth?: string | null;
+  quotatotal?: number | null;
+  packagechangedate?: string | null;
+  billdate?: string | null; // used as expiresAt
+  createddate?: string;
+  updateddate?: string;
+};
+
 

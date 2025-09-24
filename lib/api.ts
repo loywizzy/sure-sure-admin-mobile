@@ -1,5 +1,5 @@
 import { getJSON, setJSON } from './storage';
-import { PackageItem, TransactionItem, BranchItem, UserItem } from './types';
+import { PackageItem, TransactionItem, BranchItem, UserItem, DBPackage, DBUser } from './types';
 
 const KEYS = {
   packages: 'app.packages',
@@ -97,7 +97,38 @@ async function ensureSeeds(): Promise<void> {
   }
 }
 
-// Packages API
+// Helper mappers DB -> App models
+function mapDBPackageToApp(p: DBPackage): PackageItem {
+  return {
+    code: String(p.id).padStart(5, '0'),
+    name: p.packagename,
+    price: Number(p.packageprice),
+    maxQuota: Number(p.quotalimit),
+    remaining: 0,
+    durationDays: Number(p.duration ?? 30),
+    active: Number(p.isactive) === 1,
+  };
+}
+
+function mapDBUserToApp(u: DBUser, packages: PackageItem[]): UserItem {
+  const pkgCode = String(u.packageid).padStart(5, '0');
+  const pkg = packages.find((p) => p.code === pkgCode);
+  return {
+    id: String(u.id).padStart(6, '0'),
+    code: u.merchantid ? String(u.merchantid).padStart(2, '0') : String(u.id).slice(-2),
+    firstName: u.nameen || u.nameth || 'User',
+    lastName: '',
+    email: u.email,
+    role: u.usertype,
+    active: Number(u.isactive) === 1,
+    packageCode: pkgCode,
+    usedCount: 0,
+    remaining: pkg ? pkg.maxQuota : 0,
+    expiresAt: u.billdate ?? new Date().toISOString(),
+  };
+}
+
+// Packages API (mock, but follow DB field names for future integration)
 export async function listPackages(): Promise<PackageItem[]> {
   await ensureSeeds();
   await delay();

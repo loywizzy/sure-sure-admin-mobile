@@ -141,7 +141,16 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
 
                     <TouchableOpacity
                       className="mx-4 flex-row items-center rounded-lg px-3 py-3"
-                      activeOpacity={0.7}>
+                      activeOpacity={0.7}
+                      onPress={() => {
+                        import('../lib/store').then(({ useAuthStore }) => {
+                          import('expo-router').then(({ router }) => {
+                            useAuthStore.getState().logout().then(() => {
+                              router.replace('/login');
+                            });
+                          });
+                        });
+                      }}>
                       <Text className="mr-3 text-base">🚪</Text>
                       <Text className="text-sm font-medium text-red-500">ออกจากระบบ</Text>
                     </TouchableOpacity>
