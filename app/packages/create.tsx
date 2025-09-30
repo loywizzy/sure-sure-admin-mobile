@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Switch, Modal } from 'react-native';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
-import { getNextPackageCode, upsertPackage } from '../../lib/api';
+import { packageService } from '../../lib/services/packageService';
 import { router } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { PackageItem } from '../../lib/types';
 
 const schema = z.object({
   name: z.string().min(1, 'กรุณากรอกชื่อแพ็คเกจ'),
@@ -39,17 +38,16 @@ export default function CreatePackageScreen() {
 
   const mutation = useMutation({
     mutationFn: async (values: FormValues) => {
-      const code = await getNextPackageCode();
-      const dto: PackageItem = {
-        code,
-        name: values.name.trim(),
-        price: Number(values.price),
-        maxQuota: Number(values.maxQuota),
-        remaining: Number(values.remaining),
-        durationDays: Number(values.durationDays),
-        active: values.active,
-      };
-      await upsertPackage(dto);
+      const payload = {
+        id: 0,
+        package_name: values.name.trim(),
+        package_price: Number(values.price),
+        quota_limit: Number(values.maxQuota),
+        amount: Number(values.remaining || '0'),
+        duration: Number(values.durationDays),
+        is_active: values.active ? 1 : 0,
+      } as const;
+      await packageService.createPackage(payload as any);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['packages'] });

@@ -66,4 +66,12 @@ export async function httpPut<TResponse = unknown, TBody = unknown>(path: string
 	return await request<TResponse>('PUT', path, body, token, signal);
 }
 
+export async function httpPost<TResponse = unknown, TBody = unknown>(path: string, body: TBody, token?: string, signal?: AbortSignal): Promise<TResponse> {
+	return await request<TResponse>('POST', path, body, token, signal);
+}
+
+export async function httpDelete<TResponse = unknown>(path: string, token?: string, signal?: AbortSignal): Promise<TResponse> {
+	return await request<TResponse>('DELETE', path, undefined, token, signal);
+}
+
 

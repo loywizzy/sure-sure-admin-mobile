@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Switch, Modal } from 'react-native';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
-import { getPackageByCode, upsertPackage } from '../../lib/api';
+import { packageService } from '../../lib/services/packageService';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { PackageItem } from '../../lib/types';
 
 const schema = z.object({
   name: z.string().min(1, 'กรุณากรอกชื่อแพ็คเกจ'),
@@ -26,7 +25,7 @@ export default function EditPackageScreen() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [result, setResult] = useState<{ visible: boolean; success?: boolean; message: string }>({ visible: false, message: '' });
   const queryClient = useQueryClient();
-  const { control, handleSubmit, setValue, watch, reset } = useForm<FormValues>({
+  const { handleSubmit, setValue, watch } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { name: '', price: '', maxQuota: '', active: true, remaining: '', durationDays: '' },
   });
@@ -40,36 +39,34 @@ export default function EditPackageScreen() {
 
   const { data: pkg } = useQuery({
     queryKey: ['packages', code],
-    queryFn: async () => (code ? await getPackageByCode(String(code)) : undefined),
+    queryFn: async () => (code ? await packageService.fetchPackageById(Number(code)) : undefined),
     enabled: Boolean(code),
   });
 
   useEffect(() => {
     if (pkg) {
-      reset({
-        name: pkg.name,
-        price: String(pkg.price),
-        maxQuota: String(pkg.maxQuota),
-        active: pkg.active,
-        remaining: String(pkg.remaining),
-        durationDays: String(pkg.durationDays),
-      });
+      setValue('name', pkg.name);
+      setValue('price', String(pkg.price));
+      setValue('maxQuota', String(pkg.maxQuota));
+      setValue('active', pkg.active);
+      setValue('remaining', String(pkg.remaining));
+      setValue('durationDays', String(pkg.durationDays));
     }
-  }, [pkg, reset]);
+  }, [pkg, setValue]);
 
   const mutation = useMutation({
     mutationFn: async (values: FormValues) => {
       if (!code) throw new Error('no code');
-      const dto: PackageItem = {
-        code: String(code),
-        name: values.name.trim(),
-        price: Number(values.price),
-        maxQuota: Number(values.maxQuota),
-        remaining: Number(values.remaining),
-        durationDays: Number(values.durationDays),
-        active: values.active,
-      };
-      await upsertPackage(dto);
+      const payload = {
+        id: Number(code),
+        package_name: values.name.trim(),
+        package_price: Number(values.price),
+        quota_limit: Number(values.maxQuota),
+        amount: Number(values.remaining || '0'),
+        duration: Number(values.durationDays),
+        is_active: values.active ? 1 : 0,
+      } as const;
+      await packageService.updatePackage(payload as any);
     },
     onSuccess: async () => {
       await Promise.all([

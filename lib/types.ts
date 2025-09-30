@@ -1,5 +1,6 @@
 // Domain types
 export type PackageItem = {
+  id?: number;
   code: string;
   name: string;
   price: number;

@@ -4,13 +4,13 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { listPackages } from '../lib/api';
+import { packageService } from '../lib/services/packageService';
 import type { PackageItem } from '../lib/types';
 
 export default function PackagesScreen() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [query, setQuery] = useState('');
-  const { data: items = [], isLoading } = useQuery({ queryKey: ['packages'], queryFn: listPackages });
+  const { data: items = [], isLoading } = useQuery({ queryKey: ['packages'], queryFn: packageService.fetchPackages });
 
   const filtered = useMemo(() => {
     if (!query.trim()) return items;
