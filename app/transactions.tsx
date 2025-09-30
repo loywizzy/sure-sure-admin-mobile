@@ -5,7 +5,7 @@ import Sidebar from '../components/Sidebar';
 import SearchBottomSheet from '../features/dashboard/components/TransactionBottomSheet';
 import CrossPlatformDatePicker from '../components/ui/CrossPlatformDatePicker';
 import { useQuery } from '@tanstack/react-query';
-import { listTransactions } from '../lib/api';
+import { transactionService } from '../lib/services/transactionService';
 import type { TransactionItem, TransactionStatus } from '../lib/types';
 
 type Txn = TransactionItem;
@@ -20,7 +20,7 @@ export default function TransactionsScreen() {
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>('');
 
-  const { data: txns = [], isLoading } = useQuery({ queryKey: ['transactions'], queryFn: listTransactions });
+  const { data: txns = [], isLoading } = useQuery({ queryKey: ['transactions'], queryFn: transactionService.fetchTransactions });
 
   type DisplayTxn = Omit<Txn, 'createdAt'> & { createdAt: Date };
 
