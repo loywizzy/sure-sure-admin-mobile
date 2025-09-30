@@ -4,7 +4,7 @@ import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { listPackages } from '../../lib/api';
+import { packageService } from '../../lib/services/packageService';
 import { userService } from '../../lib/services/userService';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 
@@ -15,7 +15,7 @@ export default function EditUserScreen() {
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({ queryKey: ['users', id], queryFn: async () => (id ? await userService.fetchUserByUid(String(id)) : undefined), enabled: Boolean(id) });
-  const { data: pkgs = [] } = useQuery({ queryKey: ['packages'], queryFn: listPackages });
+  const { data: pkgs = [] } = useQuery({ queryKey: ['packages'], queryFn: packageService.fetchPackages });
 
   const [active, setActive] = useState(true);
   const [packageCode, setPackageCode] = useState<string>('');
