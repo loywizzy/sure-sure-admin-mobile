@@ -13,6 +13,7 @@ export default function UsersScreen() {
   const { data: items = [], isLoading } = useQuery({ queryKey: ['users'], queryFn: userService.fetchUsers });
   useWindowDimensions();
   const columns = 2; // แสดง 2 การ์ดต่อแถวตามคำขอ
+  const CARD_HEIGHT = 180;
 
   const filtered = useMemo(() => {
     if (!query.trim()) return items;
@@ -29,11 +30,15 @@ export default function UsersScreen() {
 
   const Card = ({ u }: { u: UserItem }) => (
     <View
-      className="mb-4 rounded-2xl border border-gray-200 bg-white p-4"
-      style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 4 }}
+      className="mb-4 rounded-2xl border border-gray-200 bg-white p-4 justify-between overflow-hidden"
+      style={{ height: CARD_HEIGHT, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 4 }}
     >
-      <Text className="mb-2 font-mono text-base tracking-widest text-gray-700">{u.code} (Merchant)</Text>
-      <Text className="mb-4 text-2xl font-extrabold text-gray-900">{[u.firstName, u.lastName].filter(Boolean).join(' ')}</Text>
+      <Text className="mb-2 font-mono text-base tracking-widest text-gray-700" numberOfLines={1}>
+        {u.code} (Merchant)
+      </Text>
+      <Text className="mb-4 text-2xl font-extrabold text-gray-900" numberOfLines={2} ellipsizeMode="tail">
+        {[u.firstName, u.lastName].filter(Boolean).join(' ')}
+      </Text>
       <TouchableOpacity
         className="self-start rounded-full bg-blue-600 px-4 py-2"
         onPress={() => router.push({ pathname: '/users/[id]', params: { id: u.uid || u.id } })}
