@@ -41,6 +41,7 @@ export type UserRole = 'merchant' | 'admin';
 
 export type UserItem = {
   id: string; // like 000001
+  uid?: string; // backend uid used for fetching details
   code: string; // short code like 01
   firstName: string;
   lastName: string;

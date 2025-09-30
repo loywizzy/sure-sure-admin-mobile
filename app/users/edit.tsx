@@ -4,7 +4,8 @@ import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getUserById, listPackages, updateUser } from '../../lib/api';
+import { listPackages } from '../../lib/api';
+import { userService } from '../../lib/services/userService';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 
 export default function EditUserScreen() {
@@ -13,7 +14,7 @@ export default function EditUserScreen() {
   const [result, setResult] = useState<{ visible: boolean; success?: boolean; message: string }>({ visible: false, message: '' });
   const queryClient = useQueryClient();
 
-  const { data: user } = useQuery({ queryKey: ['users', id], queryFn: async () => (id ? await getUserById(String(id)) : undefined), enabled: Boolean(id) });
+  const { data: user } = useQuery({ queryKey: ['users', id], queryFn: async () => (id ? await userService.fetchUserByUid(String(id)) : undefined), enabled: Boolean(id) });
   const { data: pkgs = [] } = useQuery({ queryKey: ['packages'], queryFn: listPackages });
 
   const [active, setActive] = useState(true);
@@ -28,8 +29,41 @@ export default function EditUserScreen() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!id) throw new Error('no id');
-      await updateUser(String(id), { active, packageCode });
+      if (!id || !user) throw new Error('no id');
+      // เตรียม payload ตามสัญญา backend
+      const payload = {
+        access_token: null,
+        address: null,
+        bill_date: user.expiresAt,
+        created_date: null,
+        email: user.email,
+        id: Number(user.id),
+        is_active: active ? 1 : 0,
+        merchant_id: Number(user.code) || 0,
+        name_en: user.firstName,
+        name_th: user.firstName,
+        package_change_date: null,
+        package_id: Number(packageCode || user.packageCode),
+        password: null,
+        phone: null,
+        picture: null,
+        quota_all: null,
+        quota_left: user.remaining,
+        quota_usage: user.usedCount,
+        step: null,
+        store_category_type: null,
+        store_email: null,
+        store_name: null,
+        store_phone: null,
+        token: null,
+        uid: user.uid || String(id),
+        updated_date: new Date().toISOString(),
+        user_role: user.role,
+        user_type: user.role,
+        username: user.firstName,
+        website: null,
+      } as const;
+      await userService.updateUserRemote(payload);
     },
     onSuccess: async () => {
       await Promise.all([

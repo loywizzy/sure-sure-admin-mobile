@@ -3,14 +3,14 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput, useWindowDimension
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { useQuery } from '@tanstack/react-query';
-import { listUsers } from '../lib/api';
+import { userService } from '../lib/services/userService';
 import type { UserItem } from '../lib/types';
 import { router } from 'expo-router';
 
 export default function UsersScreen() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [query, setQuery] = useState('');
-  const { data: items = [], isLoading } = useQuery({ queryKey: ['users'], queryFn: listUsers });
+  const { data: items = [], isLoading } = useQuery({ queryKey: ['users'], queryFn: userService.fetchUsers });
   useWindowDimensions();
   const columns = 2; // แสดง 2 การ์ดต่อแถวตามคำขอ
 
@@ -36,7 +36,7 @@ export default function UsersScreen() {
       <Text className="mb-4 text-2xl font-extrabold text-gray-900">{[u.firstName, u.lastName].filter(Boolean).join(' ')}</Text>
       <TouchableOpacity
         className="self-start rounded-full bg-blue-600 px-4 py-2"
-        onPress={() => router.push({ pathname: '/users/[id]', params: { id: u.id } })}
+        onPress={() => router.push({ pathname: '/users/[id]', params: { id: u.uid || u.id } })}
       >
         <Text className="text-white">ดูข้อมูลเพิ่มเติม</Text>
       </TouchableOpacity>

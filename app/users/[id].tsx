@@ -4,12 +4,12 @@ import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { getUserById } from '../../lib/api';
+import { userService } from '../../lib/services/userService';
 
 export default function UserDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-  const { data: user } = useQuery({ queryKey: ['users', id], queryFn: async () => (id ? await getUserById(String(id)) : undefined), enabled: Boolean(id) });
+  const { data: user } = useQuery({ queryKey: ['users', id], queryFn: async () => (id ? await userService.fetchUserByUid(String(id)) : undefined), enabled: Boolean(id) });
 
   const handleMenuPress = () => setIsSidebarVisible(true);
   const handleSidebarClose = () => setIsSidebarVisible(false);
@@ -49,7 +49,7 @@ export default function UserDetailScreen() {
             <TouchableOpacity className="mr-3 rounded-full bg-red-500 px-6 py-2" onPress={() => router.replace('/users')}>
               <Text className="text-white">ยกเลิก</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="rounded-full bg-blue-600 px-6 py-2" onPress={() => router.push({ pathname: '/users/edit', params: { id: user.id } })}>
+            <TouchableOpacity className="rounded-full bg-blue-600 px-6 py-2" onPress={() => router.push({ pathname: '/users/edit', params: { id: user.uid || user.id } })}>
               <Text className="text-white">แก้ไข</Text>
             </TouchableOpacity>
           </View>
