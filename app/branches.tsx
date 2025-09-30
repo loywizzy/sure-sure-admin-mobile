@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput, useWindowDimension
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { useQuery } from '@tanstack/react-query';
-import { listBranches } from '../lib/api';
+import { branchService } from '../lib/services/branchService';
 import type { BranchItem } from '../lib/types';
 
 type Branch = BranchItem;
@@ -14,7 +14,7 @@ export default function BranchesScreen() {
   const { width } = useWindowDimensions();
   const columns = width >= 700 ? 2 : 1; // มือถือ = 1 คอลัมน์, จอใหญ่ = 2 คอลัมน์
 
-  const { data: branches = [], isLoading } = useQuery({ queryKey: ['branches'], queryFn: listBranches });
+  const { data: branches = [], isLoading } = useQuery({ queryKey: ['branches'], queryFn: branchService.fetchBranches });
 
   const filtered = useMemo(() => {
     if (!query.trim()) return branches;
