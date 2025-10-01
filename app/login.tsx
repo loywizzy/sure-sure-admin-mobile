@@ -22,10 +22,14 @@ export default function LoginScreen() {
 
   const onSubmit = async () => {
     setError(null);
+    if (!email.trim() || !password.trim()) {
+      setError('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
     setLoading(true);
     const ok = await login(email, password);
     setLoading(false);
-    if (!ok) setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+    if (!ok) setError('สิทธิ์ไม่ใช่ผู้ดูแลระบบ หรืออีเมล/รหัสผ่านไม่ถูกต้อง');
   };
 
   return (

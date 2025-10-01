@@ -2,6 +2,14 @@ import { create } from 'zustand';
 import { getItem, setItem } from './storage';
 import { authService } from './services/authService';
 
+function normalizeRole(input?: string | null): 'admin' | 'merchant' | null {
+  if (!input) return null;
+  const r = String(input).toLowerCase().trim();
+  if (r === 'admin' || r.includes('admin')) return 'admin';
+  if (r === 'merchant' || r.includes('merchant')) return 'merchant';
+  return null;
+}
+
 type UiState = {
   locale: 'th' | 'en';
   setLocale: (lng: 'th' | 'en') => void;
@@ -59,8 +67,15 @@ export const useAuthStore = create<AuthState>((set) => ({
     const raw = await getItem('app.auth');
     if (raw) {
       try {
-        const data = JSON.parse(raw) as { isAuthenticated?: boolean; role?: 'admin' | 'merchant' | null; name?: string | null; token?: string | null };
-        set({ isAuthenticated: !!data.isAuthenticated || !!data.token, role: (data.role ?? null) as any, name: data.name ?? null, initialized: true });
+        const data = JSON.parse(raw) as { isAuthenticated?: boolean; role?: string | null; name?: string | null; token?: string | null };
+        const roleNorm = normalizeRole(data.role ?? null);
+        const isAdmin = roleNorm === 'admin' && (!!data.isAuthenticated || !!data.token);
+        if (!isAdmin) {
+          await setItem('app.auth', '');
+          set({ isAuthenticated: false, role: null, name: null, initialized: true });
+        } else {
+          set({ isAuthenticated: true, role: 'admin', name: data.name ?? null, initialized: true });
+        }
         return;
       } catch {}
     }
@@ -72,10 +87,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (!username.trim() || !passwordStr.trim()) return false;
     try {
       const { token, role, name } = await authService.login(username, passwordStr);
-      const normalizedRole = role === 'admin' || role === 'merchant' ? (role as 'admin' | 'merchant') : null;
+      const normalizedRole = normalizeRole(role);
       const displayName = name || username.split('@')[0] || 'User';
-      await setItem('app.auth', JSON.stringify({ isAuthenticated: true, token, role: normalizedRole, name: displayName }));
-      set({ isAuthenticated: true, role: normalizedRole, name: displayName, initialized: true });
+      if (normalizedRole !== 'admin') {
+        // Reject non-admin
+        await setItem('app.auth', '');
+        set({ isAuthenticated: false, role: null, name: null, initialized: true });
+        return false;
+      }
+      await setItem('app.auth', JSON.stringify({ isAuthenticated: true, token, role: 'admin', name: displayName }));
+      set({ isAuthenticated: true, role: 'admin', name: displayName, initialized: true });
       return true;
     } catch {
       return false;
