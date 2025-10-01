@@ -7,9 +7,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { packageService } from '../../lib/services/packageService';
 import { userService } from '../../lib/services/userService';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { useUiStore } from '../../lib/store';
 
 export default function EditUserScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { theme } = useUiStore();
+  const isDark = theme === 'dark';
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [result, setResult] = useState<{ visible: boolean; success?: boolean; message: string }>({ visible: false, message: '' });
   const queryClient = useQueryClient();
@@ -146,22 +149,22 @@ export default function EditUserScreen() {
         snapPoints={["50%"]}
         enablePanDownToClose
         backdropComponent={(props) => <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" opacity={0.4} />}
-        backgroundStyle={{ backgroundColor: '#111827', borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
-        handleIndicatorStyle={{ backgroundColor: '#6b7280', width: 36, height: 4, borderRadius: 999 }}
+        backgroundStyle={{ backgroundColor: isDark ? '#111827' : '#f8fafc', borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
+        handleIndicatorStyle={{ backgroundColor: isDark ? '#6b7280' : '#cbd5f5', width: 36, height: 4, borderRadius: 999 }}
       >
         <BottomSheetView className="flex-1 px-6">
           <View className="mb-6 items-center pt-1">
-            <Text className="text-2xl font-extrabold text-gray-100">เลือกแพ็คเกจ</Text>
-            <Text className="mt-2 text-base text-gray-400">เลือกแพ็คเกจที่ต้องการเปลี่ยน</Text>
+            <Text className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">เลือกแพ็คเกจ</Text>
+            <Text className="mt-2 text-base text-gray-500 dark:text-gray-400">เลือกแพ็คเกจที่ต้องการเปลี่ยน</Text>
           </View>
           {pkgs.map((p) => (
             <TouchableOpacity
               key={p.code}
-              className="mb-4 items-center rounded-full border border-gray-700 bg-gray-800 px-5 py-4"
+              className="mb-4 items-center rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-5 py-4"
               activeOpacity={0.9}
               onPress={() => handleSelectPackage(p.code)}
             >
-              <Text className="text-center text-base font-semibold text-gray-100">{p.name}</Text>
+              <Text className="text-center text-base font-semibold text-gray-900 dark:text-gray-100">{p.name}</Text>
             </TouchableOpacity>
           ))}
         </BottomSheetView>

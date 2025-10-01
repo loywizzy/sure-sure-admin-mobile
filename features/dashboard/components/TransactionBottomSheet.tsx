@@ -6,6 +6,7 @@ import {
   BottomSheetBackdropProps,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
+import { useUiStore } from '../../../lib/store';
 
 interface SearchBottomSheetProps {
   isVisible: boolean;
@@ -28,6 +29,8 @@ export default function SearchBottomSheet({
   selectedStatus,
 }: SearchBottomSheetProps) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const { theme } = useUiStore();
+  const isDark = theme === 'dark';
 
   // Bottom sheet snap points - ครึ่งหน้าจอ
   const snapPoints = useMemo(() => ['50%'], []);
@@ -115,12 +118,12 @@ export default function SearchBottomSheet({
       enablePanDownToClose={true}
       backdropComponent={renderBackdrop}
       backgroundStyle={{
-        backgroundColor: '#111827',
+        backgroundColor: isDark ? '#111827' : '#f8fafc',
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
       }}
       handleIndicatorStyle={{
-        backgroundColor: '#6b7280',
+        backgroundColor: isDark ? '#6b7280' : '#cbd5f5',
         width: 36,
         height: 4,
         borderRadius: 999,
@@ -131,8 +134,8 @@ export default function SearchBottomSheet({
       <BottomSheetView className="flex-1 px-6">
         {/* Header */}
         <View className="mb-6 items-center pt-1">
-          <Text className="text-2xl font-extrabold text-gray-100">รายการธุรกรรม</Text>
-          <Text className="mt-2 text-base text-gray-400">เลือกธุรกรรมที่ต้องการค้นหา</Text>
+          <Text className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">รายการธุรกรรม</Text>
+          <Text className="mt-2 text-base text-gray-500 dark:text-gray-400">เลือกธุรกรรมที่ต้องการค้นหา</Text>
         </View>
 
         {/* Status Options (Pills) */}

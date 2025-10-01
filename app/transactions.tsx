@@ -5,12 +5,14 @@ import Sidebar from '../components/Sidebar';
 import SearchBottomSheet from '../features/dashboard/components/TransactionBottomSheet';
 import CrossPlatformDatePicker from '../components/ui/CrossPlatformDatePicker';
 import { useQuery } from '@tanstack/react-query';
+import { useLocalSearchParams } from 'expo-router';
 import { transactionService } from '../lib/services/transactionService';
 import type { TransactionItem, TransactionStatus } from '../lib/types';
 
 type Txn = TransactionItem;
 
 export default function TransactionsScreen() {
+  const params = useLocalSearchParams<{ customer?: string }>();
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [showSearchBottomSheet, setShowSearchBottomSheet] = useState(false);
   const [searchName, setSearchName] = useState('');
@@ -26,6 +28,11 @@ export default function TransactionsScreen() {
 
   const list = useMemo(() => {
     let result: DisplayTxn[] = txns.map((t) => ({ ...t, createdAt: new Date(t.createdAt) }));
+    // Prefilter by customer if provided from Customer 360 link
+    if (params.customer) {
+      const customer = String(params.customer);
+      result = result.filter((t) => t.customerNo === customer);
+    }
     // Name filter (first + last)
     if (searchName) {
       const q = searchName.toLowerCase();
@@ -57,7 +64,7 @@ export default function TransactionsScreen() {
       result = result.filter((t) => t.createdAt <= end);
     }
     return result;
-  }, [txns, searchName, selectedStatus, startDate, endDate]);
+  }, [txns, searchName, selectedStatus, startDate, endDate, params.customer]);
 
   const StatusPill = ({ label, tone }: { label: string; tone: 'success' | 'danger' }) => (
     <View
