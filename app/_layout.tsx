@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, usePathname, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
@@ -14,7 +14,9 @@ import '../global.css';
 
 export default function RootLayout() {
   const { locale, initialize } = useUiStore();
-  const { initialize: initAuth } = useAuthStore();
+  const { initialize: initAuth, isAuthenticated, initialized } = useAuthStore();
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     initialize();
@@ -24,6 +26,16 @@ export default function RootLayout() {
   useEffect(() => {
     i18n.changeLanguage(locale);
   }, [locale]);
+
+  // Global auth guard
+  useEffect(() => {
+    if (!initialized) return;
+    if (!isAuthenticated && pathname !== '/login') {
+      router.replace('/login');
+    } else if (isAuthenticated && pathname === '/login') {
+      router.replace('/');
+    }
+  }, [initialized, isAuthenticated, pathname, router]);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

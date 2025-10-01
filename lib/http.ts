@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { getItem } from './storage';
 
 function guessHost(): string {
 	// Web: ใช้ hostname ปัจจุบัน
@@ -35,9 +36,21 @@ function buildHeaders(extra?: Record<string, string>, token?: string): HeadersIn
 }
 
 async function request<T>(method: HttpMethod, path: string, body?: unknown, token?: string, signal?: AbortSignal): Promise<T> {
+	// หากไม่ได้ส่ง token มา ให้ดึงจาก AsyncStorage (app.auth)
+	const effectiveToken = token === undefined ? await (async () => {
+		try {
+			const raw = await getItem('app.auth');
+			if (!raw) return undefined;
+			const data = JSON.parse(raw) as { token?: string | null };
+			return data?.token || undefined;
+		} catch {
+			return undefined;
+		}
+	})() : token;
+
 	const res = await fetch(buildUrl(path), {
 		method,
-		headers: buildHeaders(undefined, token),
+		headers: buildHeaders(undefined, effectiveToken),
 		body: body === undefined ? undefined : JSON.stringify(body),
 		signal,
 	});

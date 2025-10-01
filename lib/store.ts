@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { getItem, setItem } from './storage';
+import { authService } from './services/authService';
 
 type UiState = {
   locale: 'th' | 'en';
@@ -46,23 +47,27 @@ export const useAuthStore = create<AuthState>((set) => ({
     const raw = await getItem('app.auth');
     if (raw) {
       try {
-        const data = JSON.parse(raw) as { isAuthenticated: boolean; role: 'admin' | 'merchant'; name: string | null };
-        set({ isAuthenticated: !!data.isAuthenticated, role: data.role, name: data.name, initialized: true });
+        const data = JSON.parse(raw) as { isAuthenticated?: boolean; role?: 'admin' | 'merchant' | null; name?: string | null; token?: string | null };
+        set({ isAuthenticated: !!data.isAuthenticated || !!data.token, role: (data.role ?? null) as any, name: data.name ?? null, initialized: true });
         return;
       } catch {}
     }
     set({ initialized: true });
   },
   login: async (email, password) => {
-    // Mock auth: accept any non-empty email/password
-    if (email.trim() && password.trim()) {
-      const name = email.split('@')[0];
-      const data = { isAuthenticated: true, role: 'admin' as const, name };
-      await setItem('app.auth', JSON.stringify(data));
-      set({ isAuthenticated: true, role: 'admin', name, initialized: true });
+    const username = email;
+    const passwordStr = password;
+    if (!username.trim() || !passwordStr.trim()) return false;
+    try {
+      const { token, role, name } = await authService.login(username, passwordStr);
+      const normalizedRole = role === 'admin' || role === 'merchant' ? (role as 'admin' | 'merchant') : null;
+      const displayName = name || username.split('@')[0] || 'User';
+      await setItem('app.auth', JSON.stringify({ isAuthenticated: true, token, role: normalizedRole, name: displayName }));
+      set({ isAuthenticated: true, role: normalizedRole, name: displayName, initialized: true });
       return true;
+    } catch {
+      return false;
     }
-    return false;
   },
   logout: async () => {
     await setItem('app.auth', '');

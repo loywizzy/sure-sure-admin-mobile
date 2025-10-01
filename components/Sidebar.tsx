@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Modal, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useAuthStore } from '../lib/store';
 
 interface SidebarProps {
   isVisible: boolean;
@@ -10,6 +11,8 @@ interface SidebarProps {
 export default function Sidebar({ isVisible, onClose }: SidebarProps) {
   const slideAnim = useRef(new Animated.Value(-300)).current; // Start off screen
   const router = useRouter();
+  const { name, role } = useAuthStore();
+  const initial = (name || 'U').trim().charAt(0).toUpperCase();
 
   const menuItems = [
     { id: 'dashboard', title: 'แดชบอร์ด', icon: '🏠' },
@@ -65,13 +68,13 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
                   <View className="border-b border-gray-200 p-6 pt-4">
                     <View className="mb-2 flex-row items-center">
                       <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-300">
-                        <Text className="font-semibold text-gray-600">T</Text>
+                        <Text className="font-semibold text-gray-600">{initial}</Text>
                       </View>
                       <View>
                         <Text className="text-xs uppercase tracking-wide text-gray-500">
-                          ADMIN STORE
+                          {role ? role.toUpperCase() : 'USER'}
                         </Text>
-                        <Text className="text-base font-semibold text-gray-800">TATAR</Text>
+                        <Text className="text-base font-semibold text-gray-800">{name || 'User'}</Text>
                       </View>
                     </View>
                   </View>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useAuthStore } from '../lib/store';
 
 interface NavbarProps {
   onMenuPress: () => void;
@@ -7,6 +8,8 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onMenuPress, title = 'แดชบอร์ด' }: NavbarProps) {
+  const { name } = useAuthStore();
+  const initial = (name || 'U').trim().charAt(0).toUpperCase();
   return (
     <View className="flex-row items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
       {/* Left side - Menu button */}
@@ -30,7 +33,7 @@ export default function Navbar({ onMenuPress, title = 'แดชบอร์ด'
       <TouchableOpacity
         className="h-8 w-8 items-center justify-center rounded-full bg-gray-300"
         activeOpacity={0.7}>
-        <Text className="text-sm font-medium text-gray-600">T</Text>
+        <Text className="text-sm font-medium text-gray-600">{initial}</Text>
       </TouchableOpacity>
     </View>
   );
