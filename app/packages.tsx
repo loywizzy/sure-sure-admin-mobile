@@ -31,22 +31,22 @@ export default function PackagesScreen() {
 
   const PackageCard = ({ item }: { item: PackageItem }) => (
     <View
-      className="mx-3 mb-6 rounded-2xl border border-gray-200 bg-white p-5"
+      className="mx-3 mb-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5"
       style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 6 }}
     >
       <View className="mb-3 flex-row items-center justify-between">
-        <Text className="text-sm font-mono tracking-widest text-gray-800">{item.code}</Text>
+        <Text className="text-sm font-mono tracking-widest text-gray-800 dark:text-gray-300">{item.code}</Text>
         <Text className={`text-sm ${item.active ? 'text-green-600' : 'text-red-500'}`}>
           ({item.active ? 'Active' : 'Deactive'})
         </Text>
       </View>
-      <Text className="mb-3 text-2xl font-extrabold text-gray-900">{item.name}</Text>
+      <Text className="mb-3 text-2xl font-extrabold text-gray-900 dark:text-gray-100">{item.name}</Text>
 
       <View className="mb-4">
-        <Text className="text-gray-700">💰 ราคา: {formatPrice(item.price)} บาท</Text>
-        <Text className="text-gray-700">📊 ใช้งานสูงสุด: {formatNumber(item.maxQuota)}</Text>
-        <Text className="text-gray-700">🏆 คงเหลือ: {formatNumber(item.remaining)}</Text>
-        <Text className="text-gray-700">⏳ ระยะเวลา: {item.durationDays} วัน</Text>
+        <Text className="text-gray-700 dark:text-gray-300">💰 ราคา: {formatPrice(item.price)} บาท</Text>
+        <Text className="text-gray-700 dark:text-gray-300">📊 ใช้งานสูงสุด: {formatNumber(item.maxQuota)}</Text>
+        <Text className="text-gray-700 dark:text-gray-300">🏆 คงเหลือ: {formatNumber(item.remaining)}</Text>
+        <Text className="text-gray-700 dark:text-gray-300">⏳ ระยะเวลา: {item.durationDays} วัน</Text>
       </View>
 
       <TouchableOpacity className="self-start rounded-full bg-blue-600 px-5 py-2" onPress={() => openEdit(item)}>
@@ -56,30 +56,30 @@ export default function PackagesScreen() {
   );
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <Navbar onMenuPress={handleMenuPress} title="แพ็คเกจ" />
       <Sidebar isVisible={isSidebarVisible} onClose={handleSidebarClose} />
 
       <ScrollView className="flex-1 px-4 pt-3">
         {isLoading && (
-          <View className="mb-4 rounded-xl bg-white p-4">
-            <Text className="text-gray-500">กำลังโหลด...</Text>
+          <View className="mb-4 rounded-xl bg-white dark:bg-gray-900 p-4">
+            <Text className="text-gray-500 dark:text-gray-400">กำลังโหลด...</Text>
           </View>
         )}
         {/* Search bar */}
         <View className="mb-4 flex-row items-center">
-          <View className="flex-1 rounded-2xl border border-gray-200 bg-white px-3 py-2">
+          <View className="flex-1 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-3 py-2">
             <View className="flex-row items-center">
               <TextInput
                 value={query}
                 onChangeText={setQuery}
                 placeholder="รหัสแพ็คเกจ , ชื่อแพ็คเกจ"
                 placeholderTextColor="#9ca3af"
-                className="flex-1 px-1 text-sm text-gray-800"
+                className="flex-1 px-1 text-sm text-gray-800 dark:text-gray-200"
                 returnKeyType="search"
               />
               {query.length > 0 && (
-                <TouchableOpacity onPress={() => setQuery('')} className="ml-2 h-8 w-8 items-center justify-center rounded-full border border-red-200">
+                <TouchableOpacity onPress={() => setQuery('')} className="ml-2 h-8 w-8 items-center justify-center rounded-full border border-red-200 bg-white dark:bg-gray-900">
                   <Text className="text-red-500">✕</Text>
                 </TouchableOpacity>
               )}
