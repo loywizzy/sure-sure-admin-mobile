@@ -30,13 +30,13 @@ export default function UsersScreen() {
 
   const Card = ({ u }: { u: UserItem }) => (
     <View
-      className="mb-4 rounded-2xl border border-gray-200 bg-white p-4 justify-between overflow-hidden"
+      className="mb-4 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 justify-between overflow-hidden"
       style={{ height: CARD_HEIGHT, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 4 }}
     >
-      <Text className="mb-2 font-mono text-base tracking-widest text-gray-700" numberOfLines={1}>
+      <Text className="mb-2 font-mono text-base tracking-widest text-gray-700 dark:text-gray-300" numberOfLines={1}>
         {u.code} (Merchant)
       </Text>
-      <Text className="mb-4 text-2xl font-extrabold text-gray-900" numberOfLines={2} ellipsizeMode="tail">
+      <Text className="mb-4 text-2xl font-extrabold text-gray-900 dark:text-gray-100" numberOfLines={2} ellipsizeMode="tail">
         {[u.firstName, u.lastName].filter(Boolean).join(' ')}
       </Text>
       <TouchableOpacity
@@ -49,24 +49,24 @@ export default function UsersScreen() {
   );
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       <Navbar onMenuPress={handleMenuPress} title="รายชื่อผู้ใช้" />
       <Sidebar isVisible={isSidebarVisible} onClose={handleSidebarClose} />
 
       <ScrollView className="flex-1 px-4 pt-3">
         <View className="mb-4 flex-row items-center">
-          <View className="flex-1 rounded-2xl border border-gray-200 bg-white px-3 py-2">
+          <View className="flex-1 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-3 py-2">
             <View className="flex-row items-center">
               <TextInput
                 value={query}
                 onChangeText={setQuery}
                 placeholder="รหัสลูกค้า , ชื่อ-นามสกุล"
                 placeholderTextColor="#9ca3af"
-                className="flex-1 px-1 text-base text-gray-800"
+                className="flex-1 px-1 text-base text-gray-800 dark:text-gray-200"
                 returnKeyType="search"
               />
               {query.length > 0 && (
-                <TouchableOpacity onPress={() => setQuery('')} className="ml-2 h-8 w-8 items-center justify-center rounded-full border border-red-200">
+                <TouchableOpacity onPress={() => setQuery('')} className="ml-2 h-8 w-8 items-center justify-center rounded-full border border-red-200 bg-white dark:bg-gray-900">
                   <Text className="text-red-500">✕</Text>
                 </TouchableOpacity>
               )}
@@ -78,7 +78,7 @@ export default function UsersScreen() {
         </View>
 
         {isLoading && (
-          <View className="mb-4 rounded-xl bg-white p-4"><Text className="text-gray-500">กำลังโหลด...</Text></View>
+          <View className="mb-4 rounded-xl bg-white dark:bg-gray-900 p-4"><Text className="text-gray-500 dark:text-gray-400">กำลังโหลด...</Text></View>
         )}
 
         <View className="-mx-2 flex-row flex-wrap">
