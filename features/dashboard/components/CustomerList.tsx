@@ -1,42 +1,27 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
+import { userService } from '../../../lib/services/userService';
 
 export default function CustomerList() {
   const router = useRouter();
   const [query, setQuery] = useState('');
-  const customers = useMemo(() => [
-    {
-      id: '#00001',
-      name: 'Neil Sims',
-      role: 'merchant',
-      email: 'email@example.com',
-      plan: 'Free Trial',
-      remain: 100,
-      used: 0,
-      expiredAt: '03/10/2568',
-    },
-    {
-      id: '#00002',
-      name: 'Neil Sims',
-      role: 'merchant',
-      email: 'email@example.com',
-      plan: 'Free Trial',
-      remain: 100,
-      used: 0,
-      expiredAt: '03/10/2568',
-    },
-    {
-      id: '#00003',
-      name: 'Neil Sims',
-      role: 'merchant',
-      email: 'email@example.com',
-      plan: 'Free Trial',
-      remain: 100,
-      used: 0,
-      expiredAt: '03/10/2568',
-    },
-  ], []);
+  const { data: users = [] } = useQuery({ queryKey: ['users'], queryFn: userService.fetchUsers });
+  const customers = useMemo(() => {
+    // จัดเรียงผู้ใช้ที่เพิ่งเปลี่ยนแพ็คเกจล่าสุด โดยใช้ updated_date/ expiresAt เป็นตัวแทน
+    const sorted = [...users].sort((a, b) => new Date(b.expiresAt).getTime() - new Date(a.expiresAt).getTime());
+    return sorted.slice(0, 10).map((u) => ({
+      id: `#${u.id}`,
+      name: [u.firstName, u.lastName].filter(Boolean).join(' '),
+      role: u.role,
+      email: u.email,
+      plan: u.packageCode,
+      remain: u.remaining,
+      used: u.usedCount,
+      expiredAt: new Date(u.expiresAt).toLocaleDateString('th-TH'),
+    }));
+  }, [users]);
 
   const filteredCustomers = useMemo(() => {
     const q = query.trim().toLowerCase().replace('#', '');

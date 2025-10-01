@@ -1,6 +1,6 @@
 import '@expo/metro-runtime';
 import { Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { BarChart } from 'react-native-chart-kit';
 import WeekBottomSheet from '../features/dashboard/components/WeekBottomSheet';
 import { useWeekStore } from '../lib/store';
@@ -12,6 +12,10 @@ import PieChart from '../features/dashboard/components/PieChart';
 import TransactionList from '../features/dashboard/components/TransactionList';
 import CustomerList from '../features/dashboard/components/CustomerList';
 import MonthlyRevenueCard from '../features/dashboard/components/MonthlyRevenueCard';
+import { useQuery } from '@tanstack/react-query';
+import { transactionService } from '../lib/services/transactionService';
+import { packageService } from '../lib/services/packageService';
+import { userService } from '../lib/services/userService';
 
 export default function Index() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
@@ -19,9 +23,12 @@ export default function Index() {
   const { weekStartISO, shiftWeeks, setWeekStart } = useWeekStore();
   const [showWeekPicker, setShowWeekPicker] = useState(false);
 
-  const weekStart = new Date(weekStartISO);
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekEnd.getDate() + 6);
+  const weekStart = useMemo(() => new Date(weekStartISO), [weekStartISO]);
+  const weekEnd = useMemo(() => {
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + 6);
+    return d;
+  }, [weekStart]);
   const weekLabel = `${weekStart.toLocaleDateString('th-TH', { day: '2-digit', month: 'short' })}–${weekEnd.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' })}`;
 
   const handleMenuPress = () => {
@@ -31,6 +38,78 @@ export default function Index() {
   const handleSidebarClose = () => {
     setIsSidebarVisible(false);
   };
+
+  // รายได้เดือนนี้/เดือนที่แล้ว จาก transaction.amount
+  const { data: txns = [] } = useQuery({ queryKey: ['transactions'], queryFn: transactionService.fetchTransactions });
+  const { data: pkgs = [] } = useQuery({ queryKey: ['packages'], queryFn: packageService.fetchPackages });
+  const { data: users = [] } = useQuery({ queryKey: ['users'], queryFn: userService.fetchUsers });
+  const { thisMonthRevenue, lastMonthRevenue, diffLabel, diffIsUp } = useMemo(() => {
+    const now = new Date();
+    const thisMonth = now.getMonth();
+    const thisYear = now.getFullYear();
+    const lastMonthDate = new Date(thisYear, thisMonth - 1, 1);
+    const lastMonth = lastMonthDate.getMonth();
+    const lastYear = lastMonthDate.getFullYear();
+
+    let thisSum = 0;
+    let lastSum = 0;
+    for (const t of txns) {
+      const d = new Date(t.createdAt);
+      const amt = typeof t.amount === 'number' ? t.amount : 0;
+      if (d.getFullYear() === thisYear && d.getMonth() === thisMonth) thisSum += amt;
+      else if (d.getFullYear() === lastYear && d.getMonth() === lastMonth) lastSum += amt;
+    }
+    const diff = thisSum - lastSum;
+    const formattedDiff = new Intl.NumberFormat('th-TH').format(Math.abs(Math.round(diff)));
+    return {
+      thisMonthRevenue: Math.round(thisSum),
+      lastMonthRevenue: Math.round(lastSum),
+      diffLabel: `${formattedDiff}฿`,
+      diffIsUp: diff >= 0,
+    };
+  }, [txns]);
+
+  // ยอดการใช้งานรายวันจากธุรกรรมในสัปดาห์ที่เลือก
+  const dailyCounts = useMemo(() => {
+    const counts = Array(7).fill(0) as number[]; // Mon..Sun
+    const start = new Date(weekStart);
+    const end = new Date(weekEnd);
+    end.setHours(23,59,59,999);
+    for (const t of txns) {
+      const d = new Date(t.createdAt);
+      if (d >= start && d <= end) {
+        const js = d.getDay();
+        const idx = js === 0 ? 6 : js - 1;
+        counts[idx] += 1;
+      }
+    }
+    return counts;
+  }, [txns, weekStart, weekEnd]);
+
+  // สรุปจำนวนรายการตรวจสอบจากธุรกรรม
+  const checksSummary = useMemo(() => {
+    const total = txns.length;
+    const success = txns.filter((t) => t.status === 'TRANSACTION SUCCESSFUL').length;
+    const failed = total - success;
+    return { total, success, failed };
+  }, [txns]);
+
+  // สรุปแพ็คเกจทั้งหมด/ที่ active
+  const pkgSummary = useMemo(() => {
+    const total = pkgs.length;
+    const active = pkgs.filter((p) => p.active).length;
+    const inactive = total - active;
+    return { total, active, inactive };
+  }, [pkgs]);
+
+  // สรุปลูกค้า: ทั้งหมด/active/หมดอายุ
+  const userSummary = useMemo(() => {
+    const total = users.length;
+    const active = users.filter((u) => u.active).length;
+    const now = new Date();
+    const expired = users.filter((u) => new Date(u.expiresAt) < now).length;
+    return { total, active, expired };
+  }, [users]);
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -48,10 +127,10 @@ export default function Index() {
           <View className="mb-4">
             <StatsCard
               title="รายได้เดือนนี้"
-              mainValue={new Intl.NumberFormat('th-TH').format(640405) + '฿'}
+              mainValue={new Intl.NumberFormat('th-TH').format(thisMonthRevenue) + '฿'}
               subItems={[
-                { label: 'รายได้เดือนที่แล้ว', value: new Intl.NumberFormat('th-TH').format(590000) + '฿', color: 'green' },
-                { label: 'น้อยกว่าเดือนที่แล้ว', value: '0฿', color: 'red' },
+                { label: 'รายได้เดือนที่แล้ว', value: new Intl.NumberFormat('th-TH').format(lastMonthRevenue) + '฿', color: 'green' },
+                { label: diffIsUp ? 'มากกว่าเดือนที่แล้ว' : 'น้อยกว่าเดือนที่แล้ว', value: diffLabel, color: diffIsUp ? 'green' : 'red' },
               ]}
               icon="💰"
               iconBgColor="bg-gradient-to-r from-emerald-500 to-emerald-600"
@@ -64,10 +143,10 @@ export default function Index() {
             <View className="mr-1 flex-1">
               <StatsCard
                 title="รายการตรวจสอบ"
-                mainValue={String(32)}
+                mainValue={String(checksSummary.total)}
                 subItems={[
-                  { label: 'ถูกต้อง', value: String(24), color: 'green' },
-                  { label: 'ถูกปฏิเสธ', value: String(8), color: 'red' },
+                  { label: 'ถูกต้อง', value: String(checksSummary.success), color: 'green' },
+                  { label: 'ถูกปฏิเสธ', value: String(checksSummary.failed), color: 'red' },
                 ]}
                 icon="✅"
                 iconBgColor="bg-gradient-to-r from-blue-500 to-blue-600"
@@ -77,10 +156,10 @@ export default function Index() {
             <View className="mx-1 flex-1">
               <StatsCard
                 title="แพ็คเกจ"
-                mainValue={String(12)}
+                mainValue={String(pkgSummary.total)}
                 subItems={[
-                  { label: 'กำลังใช้งาน', value: String(9), color: 'green' },
-                  { label: 'ไม่ได้ใช้งานแล้ว', value: String(3), color: 'red' },
+                  { label: 'กำลังใช้งาน', value: String(pkgSummary.active), color: 'green' },
+                  { label: 'ไม่ได้ใช้งานแล้ว', value: String(pkgSummary.inactive), color: 'red' },
                 ]}
                 icon="📦"
                 iconBgColor="bg-gradient-to-r from-purple-500 to-purple-600"
@@ -90,10 +169,10 @@ export default function Index() {
             <View className="ml-1 flex-1">
               <StatsCard
                 title="ลูกค้า"
-                mainValue={String(256)}
+                mainValue={String(userSummary.total)}
                 subItems={[
-                  { label: 'กำลังใช้งาน', value: String(198), color: 'green' },
-                  { label: 'หมดอายุ', value: String(58), color: 'red' },
+                  { label: 'กำลังใช้งาน', value: String(userSummary.active), color: 'green' },
+                  { label: 'หมดอายุ', value: String(userSummary.expired), color: 'red' },
                 ]}
                 icon="👥"
                 iconBgColor="bg-gradient-to-r from-orange-500 to-orange-600"
@@ -140,11 +219,7 @@ export default function Index() {
             <BarChart
               data={{
                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [
-                  {
-                    data: [25, 42, 67, 18, 78, 99, 35],
-                  },
-                ],
+                datasets: [{ data: dailyCounts }],
               }}
               width={screenWidth - 32 - 40} // screenWidth - padding - card padding
               height={200}

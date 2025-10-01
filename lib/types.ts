@@ -27,6 +27,7 @@ export type TransactionItem = {
   transferId: string;
   errorMsg?: string;
   status: TransactionStatus;
+  amount?: number;
 };
 
 export type BranchItem = {

@@ -41,9 +41,15 @@ function unwrap<T>(res: ApiResponse<T>): T {
 }
 
 function mapStatus(s?: string, code?: string): TransactionStatus {
-  if (s === 'SUCCESS' || code === '00') return 'TRANSACTION SUCCESSFUL';
-  if (s === 'FAILED') return 'TRANSACTION UNSUCCESSFUL';
-  // อื่นๆ จัดเป็น ERROR ไปก่อน หากมีรหัสเฉพาะค่อยแม็พเพิ่ม
+  const norm = (s || '').toUpperCase().replace(/\s+/g, ' ').trim();
+  if (norm === 'SUCCESS' || code === '00') return 'TRANSACTION SUCCESSFUL';
+  if (norm === 'FAILED') return 'TRANSACTION UNSUCCESSFUL';
+  if (norm === 'RECEIVER NOT MATCH' || norm === 'RECEIVER_NOT_MATCH') return 'RECEIVER NOT MATCH';
+  if (
+    norm === 'AMOUNT LESS THAN MINIMUM' ||
+    norm === 'AMOUNT_LESS_THAN_MINIMUM' ||
+    norm === 'LESS THAN MINIMUM'
+  ) return 'AMOUNT LESS THAN MINIMUM';
   return 'ERROR';
 }
 
@@ -67,6 +73,7 @@ function mapApiTxnToItem(t: ApiTransaction): TransactionItem {
     transferId: t.txid || t.ref_no || '-',
     errorMsg: (t.status === 'SUCCESS' || t.status_code === '00') ? undefined : (t.message || undefined),
     status: mapStatus(t.status, t.status_code),
+    amount: typeof t.amount === 'number' ? t.amount : undefined,
   };
 }
 
@@ -79,5 +86,11 @@ export async function fetchTransactions(): Promise<TransactionItem[]> {
 export const transactionService = {
   fetchTransactions,
 };
+
+// Raw for advanced aggregations (e.g., repeated sender accounts, custom flags)
+export async function fetchTransactionsRaw(): Promise<ApiTransaction[]> {
+  const res = await httpGet<ApiResponse<ApiTransaction[]>>('/transaction/get');
+  return unwrap(res) || [];
+}
 
 

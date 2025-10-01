@@ -3,6 +3,8 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-nativ
 import SearchBottomSheet from './TransactionBottomSheet';
 import CrossPlatformDatePicker from '../../../components/ui/CrossPlatformDatePicker';
 import { router } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
+import { transactionService } from '../../../lib/services/transactionService';
 
 interface VerificationRecord {
   id: string;
@@ -10,6 +12,7 @@ interface VerificationRecord {
   firstName: string;
   lastName: string;
   status: 'สำเร็จ' | 'ไม่สำเร็จ' | 'รอตรวจสอบ' | 'บัญชีผู้รับไม่ตรง' | 'จำนวนเงินน้อยกว่าขั้นต่ำ'| 'ไม่สามารถตรวจสอบได้' ;
+  customerNo: string;
 }
 
 export default function TransactionList() {
@@ -23,60 +26,15 @@ export default function TransactionList() {
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>('');
 
-  const verificationRecords: VerificationRecord[] = useMemo(
-    () => [
-      {
-        id: 'TXN2948239489230',
-        date: 'Apr 23, 2021',
-        firstName: 'สมชาย',
-        lastName: 'ใจดี',
-        status: 'สำเร็จ',
-      },
-      {
-        id: 'TXN2948239489230',
-        date: 'Apr 23, 2021',
-        firstName: 'สมหญิง',
-        lastName: 'รักดี',
-        status: 'ไม่สำเร็จ',
-      },
-      {
-        id: 'TXN2948239489230',
-        date: 'Apr 18, 2021',
-        firstName: 'วิทยา',
-        lastName: 'เก่งมาก',
-        status: 'ไม่สำเร็จ',
-      },
-      {
-        id: 'TXN2948239489230',
-        date: 'Apr 15, 2021',
-        firstName: 'มานะ',
-        lastName: 'ขยันดี',
-        status: 'บัญชีผู้รับไม่ตรง',
-      },
-      {
-        id: 'TXN2948239489230',
-        date: 'Apr 15, 2021',
-        firstName: 'ประสิทธิ์',
-        lastName: 'รวยมาก',
-        status: 'สำเร็จ',
-      },
-      {
-        id: 'TXN2948239489230',
-        date: 'Apr 11, 2021',
-        firstName: 'วิชัย',
-        lastName: 'สบายใจ',
-        status: 'จำนวนเงินน้อยกว่าขั้นต่ำ',
-      },
-      {
-        id: 'TXN2948239489430',
-        date: 'Apr 11, 2021',
-        firstName: 'วิชัย',
-        lastName: 'สบายใจ',
-        status: 'จำนวนเงินน้อยกว่าขั้นต่ำ',
-      },
-    ],
-    []
-  );
+  const { data: apiTxns = [] } = useQuery({ queryKey: ['transactions'], queryFn: transactionService.fetchTransactions });
+  const verificationRecords: VerificationRecord[] = useMemo(() => apiTxns.slice(0, 10).map((t) => ({
+    id: t.id, // ใช้ id ใน transaction เป็นเลขที่รายการ
+    customerNo: t.customerNo,
+    date: new Date(t.createdAt).toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' }),
+    firstName: t.firstName,
+    lastName: t.lastName,
+    status: t.status === 'TRANSACTION SUCCESSFUL' ? 'สำเร็จ' : 'ไม่สำเร็จ',
+  })), [apiTxns]);
 
   const formatDate = (date: Date | null): string => {
     if (!date) {
@@ -136,13 +94,7 @@ export default function TransactionList() {
     }
   };
 
-  const formatTxnForDisplay = (txnId: string): string => {
-    if (!txnId) return '';
-    if (txnId.length <= 3) return txnId;
-    const head = txnId.slice(0, -3);
-    const tail = txnId.slice(-3);
-    return `${head}\n${tail}`;
-  };
+  const formatTxnForDisplay = (txnId: string): string => txnId || '';
 
   return (
     <View className="mb-4">
@@ -225,10 +177,13 @@ export default function TransactionList() {
 
           {/* Header */}
           <View className="flex-row rounded-xl bg-gray-100 px-4 py-3">
-            <Text className="flex-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Transaction
+            <Text className="w-28 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              เลขที่รายการ
             </Text>
-            <Text className="w-32 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <Text className="w-28 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              รหัสลูกค้า
+            </Text>
+            <Text className="flex-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
               Date
             </Text>
             <Text className="w-20 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -241,12 +196,15 @@ export default function TransactionList() {
           {filteredRecords.map((record, index) => (
             <View key={index} className="mb-3 rounded-xl bg-gray-50 px-4 py-4">
               <View className="flex-row items-center">
-                <View className="flex-1">
-                  <Text className="whitespace-pre-line text-sm font-semibold text-gray-900">
+                <View className="w-28">
+                  <Text className="text-sm font-semibold text-gray-900 font-mono">
                     {formatTxnForDisplay(record.id)}
                   </Text>
                 </View>
-                <View className="w-32">
+                <View className="w-28">
+                  <Text className="text-sm text-gray-600">{record.customerNo}</Text>
+                </View>
+                <View className="flex-1">
                   <Text className="text-sm text-gray-600">{record.date}</Text>
                 </View>
                 <View className="w-20 items-end">

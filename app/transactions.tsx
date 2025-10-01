@@ -91,7 +91,6 @@ export default function TransactionsScreen() {
           elevation: 5,
         }}>
         <Text className="mb-2 text-lg font-extrabold tracking-wider text-gray-900">#{t.id}</Text>
-        <Text className="text-sm text-gray-700">| เลขรายการ: TX-0001234</Text>
         <Text className="text-sm text-gray-700">| รหัสลูกค้า: {t.customerNo}</Text>
         <Text className="text-sm text-gray-700">| ชื่อลูกค้า: {t.firstName} {t.lastName}</Text>
         <Text className="text-sm text-gray-700">| ธนาคาร: {t.bank}</Text>

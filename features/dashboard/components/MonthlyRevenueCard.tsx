@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
+import { useQuery } from '@tanstack/react-query';
+import { orderPackageService } from '../../../lib/services/orderPackageService';
 
 const monthsTh = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 
@@ -14,13 +16,18 @@ export default function MonthlyRevenueCard() {
   const screenWidth = Dimensions.get('window').width;
   const [year, setYear] = useState(new Date().getFullYear());
 
-  // mock data per year
-  const values = useMemo(() =>
-    Array.from({ length: 12 }, (_, i) => {
-      const base = ((year % 7) + 1) * 1000 + i * 300; // ใช้ year เพื่อรีคอมพิวต์ค่า
-      return Math.round(base + Math.random() * 90000) + 10000;
-    }),
-  [year]);
+  const { data: orders = [] } = useQuery({ queryKey: ['order-packages'], queryFn: orderPackageService.fetchOrderPackages });
+  // sum รายได้รายเดือนจาก order-package (เฉพาะ SUCCESS)
+  const values = useMemo(() => {
+    const arr = Array(12).fill(0) as number[];
+    for (const o of orders) {
+      if (o.status !== 'SUCCESS') continue;
+      const d = new Date(o.created_date);
+      if (d.getFullYear() !== year) continue;
+      arr[d.getMonth()] += Number(o.price || 0);
+    }
+    return arr.map(Math.round);
+  }, [orders, year]);
 
   const barWidth = 48;
   const paddingX = 32 + 40;
