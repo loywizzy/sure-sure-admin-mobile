@@ -41,25 +41,25 @@ export default function PieChartMonthSheet({
       backdropComponent={(props) => (
         <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" opacity={0.4} />
       )}
-      backgroundStyle={{ backgroundColor: '#f8fafc', borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: '#cbd5f5', width: 36, height: 4, borderRadius: 999 }}
+      backgroundStyle={{ backgroundColor: '#111827', borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
+      handleIndicatorStyle={{ backgroundColor: '#6b7280', width: 36, height: 4, borderRadius: 999 }}
     >
       <BottomSheetView className="flex-1 px-6">
         <View className="mb-5 flex-row items-center justify-between pt-1">
-          <Text className="text-2xl font-extrabold text-gray-900">เลือกเดือนและปี</Text>
+          <Text className="text-2xl font-extrabold text-gray-100">เลือกเดือนและปี</Text>
           <View className="flex-row items-center">
-            <TouchableOpacity className="mr-2 rounded-lg bg-gray-100 px-3 py-2" onPress={() => setYear((y) => y - 1)}>
-              <Text className="text-gray-700">‹</Text>
+            <TouchableOpacity className="mr-2 rounded-lg bg-gray-100 dark:bg-gray-800 px-3 py-2" onPress={() => setYear((y) => y - 1)}>
+              <Text className="text-gray-700 dark:text-gray-300">‹</Text>
             </TouchableOpacity>
-            <View className="rounded-lg bg-white px-3 py-2">
-              <Text className="text-sm text-gray-900">{year}</Text>
+            <View className="rounded-lg bg-white dark:bg-gray-900 px-3 py-2">
+              <Text className="text-sm text-gray-900 dark:text-gray-100">{year}</Text>
             </View>
             <TouchableOpacity
-              className={`ml-2 rounded-lg px-3 py-2 ${year >= currentYear ? 'bg-gray-200' : 'bg-gray-100'}`}
+              className={`ml-2 rounded-lg px-3 py-2 ${year >= currentYear ? 'bg-gray-200 dark:bg-gray-700' : 'bg-gray-100 dark:bg-gray-800'}`}
               disabled={year >= currentYear}
               onPress={() => setYear((y) => Math.min(currentYear, y + 1))}
             >
-              <Text className={`$${year >= currentYear ? 'text-gray-400' : 'text-gray-700'}`.replace('$$', '')}>›</Text>
+              <Text className={`$${year >= currentYear ? 'text-gray-400' : 'text-gray-700 dark:text-gray-300'}`.replace('$$', '')}>›</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -73,10 +73,10 @@ export default function PieChartMonthSheet({
                 <TouchableOpacity
                   disabled={isDisabled}
                   onPress={() => onSelect(i, year)}
-                  className={`items-center rounded-xl border px-3 py-3 ${isActive ? 'border-blue-300 bg-blue-50' : 'border-gray-200 bg-white'} ${isDisabled ? 'opacity-50' : ''}`}
+                  className={`items-center rounded-xl border px-3 py-3 ${isActive ? 'border-blue-300 bg-blue-50' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'} ${isDisabled ? 'opacity-50' : ''}`}
                   activeOpacity={0.8}
                 >
-                  <Text className={`text-sm ${isActive ? 'text-blue-700' : isDisabled ? 'text-gray-400' : 'text-gray-800'}`}>{m}</Text>
+                  <Text className={`text-sm ${isActive ? 'text-blue-700' : isDisabled ? 'text-gray-400' : 'text-gray-800 dark:text-gray-100'}`}>{m}</Text>
                 </TouchableOpacity>
               </View>
             );
