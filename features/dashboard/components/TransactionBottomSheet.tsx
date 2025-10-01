@@ -115,12 +115,12 @@ export default function SearchBottomSheet({
       enablePanDownToClose={true}
       backdropComponent={renderBackdrop}
       backgroundStyle={{
-        backgroundColor: '#f8fafc',
+        backgroundColor: '#111827',
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
       }}
       handleIndicatorStyle={{
-        backgroundColor: '#cbd5f5',
+        backgroundColor: '#6b7280',
         width: 36,
         height: 4,
         borderRadius: 999,
@@ -131,8 +131,8 @@ export default function SearchBottomSheet({
       <BottomSheetView className="flex-1 px-6">
         {/* Header */}
         <View className="mb-6 items-center pt-1">
-          <Text className="text-2xl font-extrabold text-gray-900">รายการธุรกรรม</Text>
-          <Text className="mt-2 text-base text-gray-500">เลือกธุรกรรมที่ต้องการค้นหา</Text>
+          <Text className="text-2xl font-extrabold text-gray-100">รายการธุรกรรม</Text>
+          <Text className="mt-2 text-base text-gray-400">เลือกธุรกรรมที่ต้องการค้นหา</Text>
         </View>
 
         {/* Status Options (Pills) */}
