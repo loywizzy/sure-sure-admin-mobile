@@ -5,12 +5,15 @@ import PieChartMonthSheet from './PieChartMonthSheet';
 import { useQuery } from '@tanstack/react-query';
 import { transactionService, fetchTransactionsRaw } from '../../../lib/services/transactionService';
 import { orderPackageService } from '../../../lib/services/orderPackageService';
+import { useUiStore } from '../../../lib/store';
 
 export default function PieChartComponent() {
   const screenWidth = Dimensions.get('window').width;
   const [pickerVisible, setPickerVisible] = useState(false);
   const now = new Date();
   const [selected, setSelected] = useState({ monthIndex: now.getMonth(), year: now.getFullYear() });
+  const { theme } = useUiStore();
+  const isDark = theme === 'dark';
   // ดึงข้อมูลดิบ
   const { data: txns = [] } = useQuery({ queryKey: ['transactions'], queryFn: transactionService.fetchTransactions });
   const { data: txnsRaw = [] } = useQuery({ queryKey: ['transactions-raw'], queryFn: fetchTransactionsRaw });
@@ -72,7 +75,7 @@ export default function PieChartComponent() {
 
   return (
     <View
-      className="mb-4 rounded-xl border border-gray-50 bg-white p-4 shadow-xl"
+      className="mb-4 rounded-xl border border-gray-50 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-xl"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
@@ -81,11 +84,11 @@ export default function PieChartComponent() {
         elevation: 8,
       }}>
       <View className="mb-4 flex-row items-center justify-between">
-        <Text className="text-lg font-bold text-gray-800">สถิติโดยรวมแบบรายเดือน</Text>
+        <Text className="text-lg font-bold text-gray-800 dark:text-gray-100">สถิติโดยรวมแบบรายเดือน</Text>
         <View className="flex-row items-center">
-          <TouchableOpacity className="mr-3 flex-row items-center rounded-lg bg-gray-50 px-3 py-2" onPress={() => setPickerVisible(true)}>
-            <Text className="mr-1 text-sm text-gray-600">{monthLabel}</Text>
-            <Text className="text-gray-400">▼</Text>
+          <TouchableOpacity className="mr-3 flex-row items-center rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-2" onPress={() => setPickerVisible(true)}>
+            <Text className="mr-1 text-sm text-gray-600 dark:text-gray-300">{monthLabel}</Text>
+            <Text className="text-gray-400 dark:text-gray-500">▼</Text>
           </TouchableOpacity>
           <Text className="font-bold text-blue-500">↗ 98%</Text>
         </View>
@@ -96,11 +99,11 @@ export default function PieChartComponent() {
         width={screenWidth - 32 - 32} // screenWidth - padding
         height={200}
         chartConfig={{
-          backgroundColor: '#ffffff',
-          backgroundGradientFrom: '#ffffff',
-          backgroundGradientTo: '#f8fafc',
+          backgroundColor: isDark ? '#111827' : '#ffffff',
+          backgroundGradientFrom: isDark ? '#111827' : '#ffffff',
+          backgroundGradientTo: isDark ? '#0b1220' : '#f8fafc',
           color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(55, 65, 81, ${opacity})`,
+          labelColor: (opacity = 1) => isDark ? `rgba(156, 163, 175, ${opacity})` : `rgba(55, 65, 81, ${opacity})`,
           style: {
             borderRadius: 16,
           },

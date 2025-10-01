@@ -99,73 +99,73 @@ export default function TransactionList() {
   return (
     <View className="mb-4">
       {/* Search Section - Outside Component */}
-      <View className="mb-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-md">
+      <View className="mb-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-md">
         {/* Row 1: Start + End date pills and clear */}
         <View className="mb-3 flex-row items-center">
           {/* Start date */}
           <TouchableOpacity
             onPress={() => setShowStartDatePicker(true)}
-            className="flex-1 flex-row items-center justify-between rounded-full border border-gray-200 bg-gray-50 px-4 py-2 mr-3">
-            <Text className={`text-sm ${startDate ? 'text-gray-800' : 'text-gray-400'}`}>
+            className="flex-1 flex-row items-center justify-between rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 mr-3">
+            <Text className={`text-sm ${startDate ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400'}`}>
               {startDate ? formatDate(startDate) : 'วันเริ่มต้น'}
             </Text>
-            <Text className="text-gray-500">📅</Text>
+            <Text className="text-gray-500 dark:text-gray-400">📅</Text>
           </TouchableOpacity>
           {/* End date */}
           <TouchableOpacity
             onPress={() => setShowEndDatePicker(true)}
-            className="flex-1 flex-row items-center justify-between rounded-full border border-gray-200 bg-gray-50 px-4 py-2">
-            <Text className={`text-sm ${endDate ? 'text-gray-800' : 'text-gray-400'}`}>
+            className="flex-1 flex-row items-center justify-between rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2">
+            <Text className={`text-sm ${endDate ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400'}`}>
               {endDate ? formatDate(endDate) : 'วันสิ้นสุด'}
             </Text>
-            <Text className="text-gray-500">📅</Text>
+            <Text className="text-gray-500 dark:text-gray-400">📅</Text>
           </TouchableOpacity>
           {/* Clear */}
           <TouchableOpacity
             onPress={clearSearch}
-            className="ml-3 h-10 w-10 items-center justify-center rounded-full border border-red-200 bg-white">
+            className="ml-3 h-10 w-10 items-center justify-center rounded-full border border-red-200 bg-white dark:bg-gray-900">
             <Text className="text-base text-red-500">✕</Text>
           </TouchableOpacity>
         </View>
 
         {/* Row 2: Name input + Status dropdown */}
         <View className="flex-row items-center">
-          <View className="mr-3 flex-1 rounded-full border border-gray-200 bg-gray-50 px-4 py-2">
+          <View className="mr-3 flex-1 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2">
             <TextInput
               value={searchName}
               onChangeText={setSearchName}
               placeholder="ชื่อ-นามสกุล"
               placeholderTextColor="#9ca3af"
-              className="text-sm text-gray-800"
+              className="text-sm text-gray-800 dark:text-gray-200"
               returnKeyType="search"
             />
           </View>
           <TouchableOpacity
             onPress={() => setShowSearchBottomSheet(true)}
-            className="w-40 flex-row items-center justify-between rounded-full border border-gray-200 bg-gray-50 px-4 py-2">
-            <Text className={`text-sm ${selectedStatus ? 'text-gray-900' : 'text-gray-400'}`}>
+            className="w-40 flex-row items-center justify-between rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2">
+            <Text className={`text-sm ${selectedStatus ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400'}`}>
               {selectedStatus || 'ทั้งหมด'}
             </Text>
-            <Text className="text-gray-500">▾</Text>
+            <Text className="text-gray-500 dark:text-gray-400">▾</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Transaction List Component */}
-      <View className="rounded-2xl border border-gray-100 bg-white shadow-md">
-        <View className="border-b border-gray-100 px-6 py-5">
+      <View className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-md">
+        <View className="border-b border-gray-100 dark:border-gray-800 px-6 py-5">
           <View className="mb-4 flex-row items-center justify-between">
             <View>
-              <Text className="text-lg font-semibold text-gray-900">รายการตรวจสอบล่าสุด</Text>
-              <Text className="text-sm text-gray-500">บันทึกการยืนยันตัวตนย้อนหลัง</Text>
+              <Text className="text-lg font-semibold text-gray-900 dark:text-gray-100">รายการตรวจสอบล่าสุด</Text>
+              <Text className="text-sm text-gray-500 dark:text-gray-400">บันทึกการยืนยันตัวตนย้อนหลัง</Text>
             </View>
-            <Text className="text-xs uppercase tracking-wide text-gray-400">อัปเดตทุก 5 นาที</Text>
+            <Text className="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">อัปเดตทุก 5 นาที</Text>
           </View>
 
           {/* Search Results Summary */}
           {(searchName || selectedStatus || startDate || endDate) && (
-            <View className="mb-3 rounded-xl bg-blue-50 px-4 py-3">
-              <Text className="text-sm text-blue-700">
+            <View className="mb-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 px-4 py-3">
+              <Text className="text-sm text-blue-700 dark:text-blue-300">
                 {filteredRecords.length} จาก {verificationRecords.length} รายการ
                 {searchName && ` • ค้นหา: ${searchName}`}
                 {selectedStatus && ` • สถานะ: ${selectedStatus}`}
@@ -176,17 +176,17 @@ export default function TransactionList() {
           )}
 
           {/* Header */}
-          <View className="flex-row rounded-xl bg-gray-100 px-4 py-3">
-            <Text className="w-28 text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <View className="flex-row rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3">
+            <Text className="w-28 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
               เลขที่รายการ
             </Text>
-            <Text className="w-28 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <Text className="w-28 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
               รหัสลูกค้า
             </Text>
-            <Text className="flex-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <Text className="flex-1 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
               Date
             </Text>
-            <Text className="w-20 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <Text className="w-20 text-right text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
               สถานะ
             </Text>
           </View>
@@ -194,18 +194,18 @@ export default function TransactionList() {
 
         <ScrollView className="max-h-96 px-2">
           {filteredRecords.map((record, index) => (
-            <View key={index} className="mb-3 rounded-xl bg-gray-50 px-4 py-4">
+            <View key={index} className="mb-3 rounded-xl bg-gray-50 dark:bg-gray-800 px-4 py-4">
               <View className="flex-row items-center">
                 <View className="w-28">
-                  <Text className="text-sm font-semibold text-gray-900 font-mono">
+                  <Text className="text-sm font-semibold text-gray-900 dark:text-gray-100 font-mono">
                     {formatTxnForDisplay(record.id)}
                   </Text>
                 </View>
                 <View className="w-28">
-                  <Text className="text-sm text-gray-600">{record.customerNo}</Text>
+                  <Text className="text-sm text-gray-600 dark:text-gray-300">{record.customerNo}</Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-sm text-gray-600">{record.date}</Text>
+                  <Text className="text-sm text-gray-600 dark:text-gray-300">{record.date}</Text>
                 </View>
                 <View className="w-20 items-end">
                   <Text className={`text-sm font-medium ${getStatusColor(record.status)}`}>
@@ -219,13 +219,13 @@ export default function TransactionList() {
           {/* No Results Message */}
           {filteredRecords.length === 0 && (
             <View className="items-center p-8">
-              <Text className="text-center text-gray-500">ไม่พบข้อมูลตามเงื่อนไขที่ค้นหา</Text>
+              <Text className="text-center text-gray-500 dark:text-gray-400">ไม่พบข้อมูลตามเงื่อนไขที่ค้นหา</Text>
             </View>
           )}
         </ScrollView>
 
         <TouchableOpacity
-          className="flex-row items-center justify-center border-t border-gray-100 py-4"
+          className="flex-row items-center justify-center border-t border-gray-100 dark:border-gray-800 py-4"
           onPress={() => router.push('/transactions')}
         >
           <Text className="mr-2 text-sm font-medium text-blue-500">ดูทั้งหมด</Text>

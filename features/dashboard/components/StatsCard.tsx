@@ -28,7 +28,7 @@ export default function StatsCard({
     // Hero Card Layout - Horizontal layout with more space
     return (
       <View
-        className="rounded-3xl border-0 bg-white p-6 shadow-xl"
+        className="rounded-3xl border-0 bg-white dark:bg-gray-900 p-6 shadow-xl"
         style={{
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 6 },
@@ -52,10 +52,10 @@ export default function StatsCard({
 
           {/* Content Section */}
           <View className="flex-1">
-            <Text className="mb-2 text-sm font-medium uppercase tracking-wide text-gray-500">
+            <Text className="mb-2 text-sm font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
               {title}
             </Text>
-            <Text className="mb-3 text-4xl font-black text-gray-900">{mainValue}</Text>
+            <Text className="mb-3 text-4xl font-black text-gray-900 dark:text-gray-100">{mainValue}</Text>
 
             {/* Sub Items - Vertical in Hero Card */}
             {subItems.length > 0 && (
@@ -70,7 +70,7 @@ export default function StatsCard({
                           item.color === 'green' ? 'bg-green-400' : 'bg-red-400'
                         }`}
                       />
-                      <Text className="flex-1 text-sm font-medium text-gray-600">{item.label}</Text>
+                      <Text className="flex-1 text-sm font-medium text-gray-600 dark:text-gray-300">{item.label}</Text>
                     </View>
                     <View
                       className={`rounded-lg px-3 py-1 ${
@@ -97,7 +97,7 @@ export default function StatsCard({
     // Mini Card Layout - Compact vertical layout
     return (
       <View
-        className="rounded-2xl border-0 bg-white p-3 shadow-lg"
+        className="rounded-2xl border-0 bg-white dark:bg-gray-900 p-3 shadow-lg"
         style={{
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 4 },
@@ -121,15 +121,15 @@ export default function StatsCard({
             }}>
             <Text className="text-lg text-white">{icon}</Text>
           </View>
-          <Text className="mb-1 text-center text-xs font-medium text-gray-500" numberOfLines={1}>
+          <Text className="mb-1 text-center text-xs font-medium text-gray-500 dark:text-gray-400" numberOfLines={1}>
             {title}
           </Text>
-          <Text className="text-2xl font-black text-gray-900">{mainValue}</Text>
+          <Text className="text-2xl font-black text-gray-900 dark:text-gray-100">{mainValue}</Text>
         </View>
 
         {/* Sub Items - Compact for mini cards */}
         {subItems.length > 0 && (
-          <View className="rounded-xl bg-gray-50 p-2">
+          <View className="rounded-xl bg-gray-50 dark:bg-gray-800 p-2">
             {subItems.map((item, index) => (
               <View
                 key={index}
@@ -140,7 +140,7 @@ export default function StatsCard({
                       item.color === 'green' ? 'bg-green-400' : 'bg-red-400'
                     }`}
                   />
-                  <Text className="flex-1 text-xs font-medium text-gray-600" numberOfLines={1}>
+                  <Text className="flex-1 text-xs font-medium text-gray-600 dark:text-gray-300" numberOfLines={1}>
                     {item.label.length > 8 ? item.label.substring(0, 8) + '...' : item.label}
                   </Text>
                 </View>
@@ -161,7 +161,7 @@ export default function StatsCard({
   // Default Card Layout (unchanged for backward compatibility)
   return (
     <View
-      className="rounded-3xl border-0 bg-white p-5 shadow-xl"
+      className="rounded-3xl border-0 bg-white dark:bg-gray-900 p-5 shadow-xl"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 6 },
@@ -189,17 +189,17 @@ export default function StatsCard({
           <Text className="text-2xl text-white">{icon}</Text>
         </View>
         <View className="w-full items-center">
-          <Text className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-gray-400">
+          <Text className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
             {title}
           </Text>
-          <Text className="mb-1 text-center text-3xl font-black text-gray-900">{mainValue}</Text>
+          <Text className="mb-1 text-center text-3xl font-black text-gray-900 dark:text-gray-100">{mainValue}</Text>
         </View>
       </View>
 
       {/* Sub Items */}
       {subItems.length > 0 && (
         <View
-          className="mt-2 rounded-2xl bg-gradient-to-r from-gray-50 to-gray-100 p-3"
+          className="mt-2 rounded-2xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 p-3"
           style={{
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
@@ -224,7 +224,7 @@ export default function StatsCard({
                     elevation: 2,
                   }}
                 />
-                <Text className="flex-1 text-xs font-semibold text-gray-600" numberOfLines={1}>
+                <Text className="flex-1 text-xs font-semibold text-gray-600 dark:text-gray-300" numberOfLines={1}>
                   {item.label}
                 </Text>
               </View>

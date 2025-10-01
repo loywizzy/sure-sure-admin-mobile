@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Modal, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '../lib/store';
+import { useAuthStore, useUiStore } from '../lib/store';
 
 interface SidebarProps {
   isVisible: boolean;
@@ -50,7 +50,7 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
             style={{
               transform: [{ translateX: slideAnim }],
             }}>
-            <View className="h-full w-64 bg-white shadow-lg">
+            <View className="h-full w-64 bg-white dark:bg-gray-900 shadow-lg">
               <TouchableOpacity
                 activeOpacity={1}
                 style={{ flex: 1 }}
@@ -65,23 +65,23 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
                   </TouchableOpacity>
 
                   {/* Header Section */}
-                  <View className="border-b border-gray-200 p-6 pt-4">
+                  <View className="border-b border-gray-200 dark:border-gray-800 p-6 pt-4">
                     <View className="mb-2 flex-row items-center">
-                      <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-300">
-                        <Text className="font-semibold text-gray-600">{initial}</Text>
+                      <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
+                        <Text className="font-semibold text-gray-600 dark:text-gray-200">{initial}</Text>
                       </View>
                       <View>
-                        <Text className="text-xs uppercase tracking-wide text-gray-500">
+                        <Text className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
                           {role ? role.toUpperCase() : 'USER'}
                         </Text>
-                        <Text className="text-base font-semibold text-gray-800">{name || 'User'}</Text>
+                        <Text className="text-base font-semibold text-gray-800 dark:text-gray-100">{name || 'User'}</Text>
                       </View>
                     </View>
                   </View>
 
                   {/* Main Menu Section */}
                   <View className="pt-6">
-                    <Text className="mb-4 px-6 text-xs uppercase tracking-wide text-gray-500">
+                    <Text className="mb-4 px-6 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
                       MAIN
                     </Text>
 
@@ -109,24 +109,28 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
                           onClose();
                         }}>
                         <Text className="mr-3 text-base">{item.icon}</Text>
-                        <Text className="text-sm font-medium text-gray-700">{item.title}</Text>
+                        <Text className="text-sm font-medium text-gray-700 dark:text-gray-200">{item.title}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
 
                   {/* Settings Section */}
                   <View className="pt-6">
-                    <Text className="mb-4 px-6 text-xs uppercase tracking-wide text-gray-500">
+                    <Text className="mb-4 px-6 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
                       SETTINGS
                     </Text>
 
                     <TouchableOpacity
                       className="mx-4 mb-1 flex-row items-center rounded-lg px-3 py-3"
-                      activeOpacity={0.7}>
-                      <Text className="mr-3 text-base">⚙️</Text>
-                      <Text className="text-sm font-medium text-gray-700">ตั้งค่า</Text>
+                      activeOpacity={0.7}
+                      onPress={() => {
+                        const { theme, setTheme } = useUiStore.getState();
+                        setTheme(theme === 'light' ? 'dark' : 'light');
+                      }}>
+                      <Text className="mr-3 text-base">🌓</Text>
+                      <Text className="text-sm font-medium text-gray-700 dark:text-gray-200">สลับธีม</Text>
                       <View className="flex-1" />
-                      <Text className="text-xs text-gray-500">▼</Text>
+                      <Text className="text-xs text-gray-500 dark:text-gray-400">▼</Text>
                     </TouchableOpacity>
                   </View>
 
@@ -139,7 +143,7 @@ export default function Sidebar({ isVisible, onClose }: SidebarProps) {
                       className="mx-4 mb-2 flex-row items-center rounded-lg px-3 py-3"
                       activeOpacity={0.7}>
                       <Text className="mr-3 text-base">❓</Text>
-                      <Text className="text-sm font-medium text-gray-700">ช่วยเหลือ</Text>
+                      <Text className="text-sm font-medium text-gray-700 dark:text-gray-200">ช่วยเหลือ</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity

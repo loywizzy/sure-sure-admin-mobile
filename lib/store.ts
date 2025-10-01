@@ -7,23 +7,35 @@ type UiState = {
   setLocale: (lng: 'th' | 'en') => void;
   initialized: boolean;
   initialize: () => Promise<void>;
+  theme: 'light' | 'dark';
+  setTheme: (mode: 'light' | 'dark') => void;
 };
 
 export const useUiStore = create<UiState>((set, get) => ({
   locale: 'th',
   initialized: false,
+  theme: 'light',
   setLocale: (lng) => {
     set({ locale: lng });
     setItem('app.locale', lng).catch(() => {});
   },
+  setTheme: (mode) => {
+    set({ theme: mode });
+    setItem('app.theme', mode).catch(() => {});
+  },
   initialize: async () => {
     if (get().initialized) return;
     const saved = await getItem('app.locale');
+    const savedTheme = await getItem('app.theme');
     if (saved === 'th' || saved === 'en') {
-      set({ locale: saved, initialized: true });
+      set({ locale: saved });
     } else {
-      set({ initialized: true });
+      // leave default
     }
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      set({ theme: savedTheme as 'light' | 'dark' });
+    }
+    set({ initialized: true });
   },
 }));
 

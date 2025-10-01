@@ -3,7 +3,7 @@ import { Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-nati
 import { useMemo, useState } from 'react';
 import { BarChart } from 'react-native-chart-kit';
 import WeekBottomSheet from '../features/dashboard/components/WeekBottomSheet';
-import { useWeekStore } from '../lib/store';
+import { useWeekStore, useUiStore } from '../lib/store';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import StatsCard from '../features/dashboard/components/StatsCard';
@@ -22,6 +22,8 @@ export default function Index() {
   const screenWidth = Dimensions.get('window').width;
   const { weekStartISO, shiftWeeks, setWeekStart } = useWeekStore();
   const [showWeekPicker, setShowWeekPicker] = useState(false);
+  const { theme } = useUiStore();
+  const isDark = theme === 'dark';
 
   const weekStart = useMemo(() => new Date(weekStartISO), [weekStartISO]);
   const weekEnd = useMemo(() => {
@@ -86,6 +88,21 @@ export default function Index() {
     return counts;
   }, [txns, weekStart, weekEnd]);
 
+  const barChartConfig = useMemo(() => ({
+    backgroundColor: isDark ? '#111827' : '#ffffff',
+    backgroundGradientFrom: isDark ? '#111827' : '#ffffff',
+    backgroundGradientTo: isDark ? '#0b1220' : '#f8fafc',
+    decimalPlaces: 0,
+    color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
+    labelColor: (opacity = 1) => isDark ? `rgba(156, 163, 175, ${opacity})` : `rgba(107, 114, 128, ${opacity})`,
+    style: { borderRadius: 16 },
+    barPercentage: 0.7,
+    fillShadowGradientFrom: '#3b82f6',
+    fillShadowGradientFromOpacity: 0.8,
+    fillShadowGradientTo: '#1d4ed8',
+    fillShadowGradientToOpacity: 0.9,
+  }), [isDark]);
+
   // สรุปจำนวนรายการตรวจสอบจากธุรกรรม
   const checksSummary = useMemo(() => {
     const total = txns.length;
@@ -112,7 +129,7 @@ export default function Index() {
   }, [users]);
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-50 dark:bg-gray-950">
       {/* Navbar */}
       <Navbar onMenuPress={handleMenuPress} title="แดชบอร์ด" />
 
@@ -185,7 +202,7 @@ export default function Index() {
         {/* Bar Chart Section */}
         <View className="mb-4 px-4">
           <View
-            className="rounded-xl border border-gray-50 bg-white p-5 shadow-xl"
+            className="rounded-xl border border-gray-50 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-xl"
             style={{
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
@@ -200,17 +217,17 @@ export default function Index() {
                   <View className="mb-1 h-2 w-full rounded-full bg-blue-500" />
                   <View className="h-1.5 w-full rounded-full bg-blue-500" />
                 </View>
-                <Text className="text-lg font-bold text-gray-800">ยอดการใช้งานแบบรายวัน</Text>
+                <Text className="text-lg font-bold text-gray-800 dark:text-gray-100">ยอดการใช้งานแบบรายวัน</Text>
               </View>
               <View className="flex-row items-center">
-                <TouchableOpacity className="mr-2 rounded-lg bg-gray-50 px-3 py-2" onPress={() => shiftWeeks(-1)}>
-                  <Text className="text-gray-600">‹</Text>
+                <TouchableOpacity className="mr-2 rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-2" onPress={() => shiftWeeks(-1)}>
+                  <Text className="text-gray-600 dark:text-gray-300">‹</Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="rounded-lg bg-gray-50 px-3 py-2" onPress={() => setShowWeekPicker(true)}>
-                  <Text className="mr-1 text-sm text-gray-600">{weekLabel}</Text>
+                <TouchableOpacity className="rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-2" onPress={() => setShowWeekPicker(true)}>
+                  <Text className="mr-1 text-sm text-gray-600 dark:text-gray-300">{weekLabel}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="ml-2 rounded-lg bg-gray-50 px-3 py-2" onPress={() => shiftWeeks(1)}>
-                  <Text className="text-gray-600">›</Text>
+                <TouchableOpacity className="ml-2 rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-2" onPress={() => shiftWeeks(1)}>
+                  <Text className="text-gray-600 dark:text-gray-300">›</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -226,22 +243,7 @@ export default function Index() {
               yAxisLabel=""
               yAxisSuffix=""
               yAxisInterval={1}
-              chartConfig={{
-                backgroundColor: '#ffffff',
-                backgroundGradientFrom: '#ffffff',
-                backgroundGradientTo: '#f8fafc',
-                decimalPlaces: 0,
-                color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(107, 114, 128, ${opacity})`,
-                style: {
-                  borderRadius: 16,
-                },
-                barPercentage: 0.7,
-                fillShadowGradientFrom: '#3b82f6',
-                fillShadowGradientFromOpacity: 0.8,
-                fillShadowGradientTo: '#1d4ed8',
-                fillShadowGradientToOpacity: 0.9,
-              }}
+              chartConfig={barChartConfig}
               verticalLabelRotation={0}
               showValuesOnTopOfBars={true}
               fromZero={true}

@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-nati
 import { BarChart } from 'react-native-chart-kit';
 import { useQuery } from '@tanstack/react-query';
 import { orderPackageService } from '../../../lib/services/orderPackageService';
+import { useUiStore } from '../../../lib/store';
 
 const monthsTh = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 
@@ -15,6 +16,8 @@ const formatShort = (n: number) => {
 export default function MonthlyRevenueCard() {
   const screenWidth = Dimensions.get('window').width;
   const [year, setYear] = useState(new Date().getFullYear());
+  const { theme } = useUiStore();
+  const isDark = theme === 'dark';
 
   const { data: orders = [] } = useQuery({ queryKey: ['order-packages'], queryFn: orderPackageService.fetchOrderPackages });
   // sum รายได้รายเดือนจาก order-package (เฉพาะ SUCCESS)
@@ -37,27 +40,27 @@ export default function MonthlyRevenueCard() {
 
   return (
     <View
-      className="rounded-xl border border-gray-50 bg-white p-5 shadow-xl"
+      className="rounded-xl border border-gray-50 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-xl"
       style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 8 }}
     >
       <View className="mb-6 flex-row items-center justify-between">
         <View className="flex-row items-center">
-          <Text className="text-lg font-bold text-gray-800">รายได้รายเดือน (บาท)</Text>
+          <Text className="text-lg font-bold text-gray-800 dark:text-gray-100">รายได้รายเดือน</Text>
         </View>
         <View className="flex-row items-center">
-          <TouchableOpacity className="mr-2 rounded-lg bg-gray-50 px-3 py-2" onPress={() => setYear((y) => y-1)}>
-            <Text className="text-gray-600">‹</Text>
+          <TouchableOpacity className="mr-2 rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-2" onPress={() => setYear((y) => y-1)}>
+            <Text className="text-gray-600 dark:text-gray-300">‹</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="rounded-lg bg-gray-50 px-3 py-2">
-            <Text className="text-sm text-gray-600">{year}</Text>
+          <TouchableOpacity className="rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-2">
+            <Text className="text-sm text-gray-600 dark:text-gray-300">{year}</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="ml-2 rounded-lg bg-gray-50 px-3 py-2" onPress={() => setYear((y) => y+1)}>
-            <Text className="text-gray-600">›</Text>
+          <TouchableOpacity className="ml-2 rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-2" onPress={() => setYear((y) => y+1)}>
+            <Text className="text-gray-600 dark:text-gray-300">›</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <Text className="-mt-4 mb-3 text-sm text-gray-500">รายได้จากแพ็คเกจ</Text>
+      <Text className="-mt-4 mb-3 text-sm text-gray-500 dark:text-gray-400">รายได้จากแพ็คเกจ (บาท)</Text>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <BarChart
@@ -69,13 +72,13 @@ export default function MonthlyRevenueCard() {
           yAxisLabel=""
           yAxisSuffix=""
           chartConfig={{
-            backgroundColor: '#ffffff',
-            backgroundGradientFrom: '#ffffff',
-            backgroundGradientTo: '#f8fafc',
+            backgroundColor: isDark ? '#111827' : '#ffffff',
+            backgroundGradientFrom: isDark ? '#111827' : '#ffffff',
+            backgroundGradientTo: isDark ? '#0b1220' : '#f8fafc',
             decimalPlaces: 0,
             color: (opacity = 1) => `rgba(59,130,246,${opacity})`,
-            labelColor: (opacity = 1) => `rgba(107,114,128,${opacity})`,
-            propsForBackgroundLines: { strokeDasharray: '3,6', stroke: '#e5e7eb' },
+            labelColor: (opacity = 1) => isDark ? `rgba(156,163,175,${opacity})` : `rgba(107,114,128,${opacity})`,
+            propsForBackgroundLines: { strokeDasharray: '3,6', stroke: isDark ? '#374151' : '#e5e7eb' },
             barPercentage: 0.6,
             fillShadowGradientFrom: '#3b82f6',
             fillShadowGradientFromOpacity: 0.85,
@@ -89,8 +92,8 @@ export default function MonthlyRevenueCard() {
       </ScrollView>
 
       <View className="mt-3 flex-row justify-between">
-        <Text className="text-sm text-gray-600">รวมทั้งปี</Text>
-        <Text className="text-sm font-semibold text-gray-900">{total.toLocaleString('th-TH')}</Text>
+        <Text className="text-sm text-gray-600 dark:text-gray-400">รวมทั้งปี</Text>
+        <Text className="text-sm font-semibold text-gray-900 dark:text-gray-100">{total.toLocaleString('th-TH')}</Text>
       </View>
     </View>
   );

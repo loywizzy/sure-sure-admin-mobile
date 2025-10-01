@@ -1,4 +1,5 @@
 import { Stack, usePathname, useRouter } from 'expo-router';
+import { useColorScheme } from 'nativewind';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
@@ -17,6 +18,7 @@ export default function RootLayout() {
   const { initialize: initAuth, isAuthenticated, initialized } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const { setColorScheme } = useColorScheme();
 
   useEffect(() => {
     initialize();
@@ -36,6 +38,19 @@ export default function RootLayout() {
       router.replace('/');
     }
   }, [initialized, isAuthenticated, pathname, router]);
+
+  // Apply theme to NativeWind when UI store is ready
+  useEffect(() => {
+    if (!initialized) return;
+    const unsub = useUiStore.subscribe((s) => {
+      setColorScheme(s.theme);
+    });
+    // set once on mount
+    setColorScheme(useUiStore.getState().theme);
+    return () => {
+      unsub();
+    };
+  }, [initialized, setColorScheme]);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
