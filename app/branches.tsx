@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, useWindowDimensions } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, useWindowDimensions, RefreshControl } from 'react-native';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { useQuery } from '@tanstack/react-query';
@@ -14,7 +14,7 @@ export default function BranchesScreen() {
   const { width } = useWindowDimensions();
   const columns = width >= 700 ? 2 : 1; // มือถือ = 1 คอลัมน์, จอใหญ่ = 2 คอลัมน์
 
-  const { data: branches = [], isLoading } = useQuery({ queryKey: ['branches'], queryFn: branchService.fetchBranches });
+  const { data: branches = [], isLoading, isFetching, refetch } = useQuery({ queryKey: ['branches'], queryFn: branchService.fetchBranches });
 
   const filtered = useMemo(() => {
     if (!query.trim()) return branches;
@@ -70,7 +70,10 @@ export default function BranchesScreen() {
       <Navbar onMenuPress={handleMenuPress} title="สาขาร้านค้า" />
       <Sidebar isVisible={isSidebarVisible} onClose={handleSidebarClose} />
 
-      <ScrollView className="flex-1 px-4 pt-3">
+      <ScrollView
+        className="flex-1 px-4 pt-3"
+        refreshControl={<RefreshControl refreshing={isFetching} onRefresh={() => refetch()} colors={["#3b82f6"]} tintColor="#3b82f6" />}
+      >
         {isLoading && (
           <View className="mb-4 rounded-xl bg-white dark:bg-gray-900 p-4">
             <Text className="text-gray-500 dark:text-gray-400">กำลังโหลด...</Text>

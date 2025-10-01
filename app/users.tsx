@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, useWindowDimensions } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, useWindowDimensions, RefreshControl } from 'react-native';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { useQuery } from '@tanstack/react-query';
@@ -10,7 +10,7 @@ import { router } from 'expo-router';
 export default function UsersScreen() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [query, setQuery] = useState('');
-  const { data: items = [], isLoading } = useQuery({ queryKey: ['users'], queryFn: userService.fetchUsers });
+  const { data: items = [], isLoading, isFetching, refetch } = useQuery({ queryKey: ['users'], queryFn: userService.fetchUsers });
   useWindowDimensions();
   const columns = 2; // แสดง 2 การ์ดต่อแถวตามคำขอ
   const CARD_HEIGHT = 180;
@@ -53,7 +53,10 @@ export default function UsersScreen() {
       <Navbar onMenuPress={handleMenuPress} title="รายชื่อผู้ใช้" />
       <Sidebar isVisible={isSidebarVisible} onClose={handleSidebarClose} />
 
-      <ScrollView className="flex-1 px-4 pt-3">
+      <ScrollView
+        className="flex-1 px-4 pt-3"
+        refreshControl={<RefreshControl refreshing={isFetching} onRefresh={() => refetch()} colors={["#3b82f6"]} tintColor="#3b82f6" />}
+      >
         <View className="mb-4 flex-row items-center">
           <View className="flex-1 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-3 py-2">
             <View className="flex-row items-center">

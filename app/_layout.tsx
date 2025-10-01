@@ -9,6 +9,7 @@ import { queryClient } from '../lib/queryClient';
 import i18n from '../lib/i18n';
 import { useEffect } from 'react';
 import { useAuthStore, useUiStore } from '../lib/store';
+import { subscribeDashboard } from '../lib/realtime';
 
 // Import global styles (e.g., NativeWind)
 import '../global.css';
@@ -51,6 +52,16 @@ export default function RootLayout() {
       unsub();
     };
   }, [initialized, setColorScheme]);
+
+  // Realtime for dashboard only
+  useEffect(() => {
+    if (!initialized) return;
+    if (!isAuthenticated) return;
+    const sub = subscribeDashboard();
+    return () => {
+      sub.disconnect();
+    };
+  }, [initialized, isAuthenticated]);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

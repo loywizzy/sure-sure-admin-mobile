@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, RefreshControl } from 'react-native';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { router } from 'expo-router';
@@ -10,7 +10,7 @@ import type { PackageItem } from '../lib/types';
 export default function PackagesScreen() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [query, setQuery] = useState('');
-  const { data: items = [], isLoading } = useQuery({ queryKey: ['packages'], queryFn: packageService.fetchPackages });
+  const { data: items = [], isLoading, isFetching, refetch } = useQuery({ queryKey: ['packages'], queryFn: packageService.fetchPackages });
 
   const filtered = useMemo(() => {
     if (!query.trim()) return items;
@@ -60,7 +60,10 @@ export default function PackagesScreen() {
       <Navbar onMenuPress={handleMenuPress} title="แพ็คเกจ" />
       <Sidebar isVisible={isSidebarVisible} onClose={handleSidebarClose} />
 
-      <ScrollView className="flex-1 px-4 pt-3">
+      <ScrollView
+        className="flex-1 px-4 pt-3"
+        refreshControl={<RefreshControl refreshing={isFetching} onRefresh={() => refetch()} colors={["#3b82f6"]} tintColor="#3b82f6" />}
+      >
         {isLoading && (
           <View className="mb-4 rounded-xl bg-white dark:bg-gray-900 p-4">
             <Text className="text-gray-500 dark:text-gray-400">กำลังโหลด...</Text>

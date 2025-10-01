@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, TextInput } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, TextInput, RefreshControl } from 'react-native';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import SearchBottomSheet from '../features/dashboard/components/TransactionBottomSheet';
@@ -20,7 +20,7 @@ export default function TransactionsScreen() {
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>('');
 
-  const { data: txns = [], isLoading } = useQuery({ queryKey: ['transactions'], queryFn: transactionService.fetchTransactions });
+  const { data: txns = [], isLoading, isFetching, refetch } = useQuery({ queryKey: ['transactions'], queryFn: transactionService.fetchTransactions });
 
   type DisplayTxn = Omit<Txn, 'createdAt'> & { createdAt: Date };
 
@@ -126,7 +126,10 @@ export default function TransactionsScreen() {
       <Navbar onMenuPress={handleMenuPress} title="รายงานธุรกรรม" />
       <Sidebar isVisible={isSidebarVisible} onClose={handleSidebarClose} />
 
-      <ScrollView className="flex-1 px-4 pt-3">
+      <ScrollView
+        className="flex-1 px-4 pt-3"
+        refreshControl={<RefreshControl refreshing={isFetching} onRefresh={() => refetch()} colors={["#3b82f6"]} tintColor="#3b82f6" />}
+      >
         {isLoading && (
           <View className="mb-4 rounded-xl bg-white dark:bg-gray-900 p-4">
             <Text className="text-gray-500 dark:text-gray-400">กำลังโหลด...</Text>
