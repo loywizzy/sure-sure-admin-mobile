@@ -1,7 +1,6 @@
 import { httpGet } from '../http';
 import type { TransactionItem, TransactionStatus } from '../types';
 
-// ตาม API: { status_code, message, data: Txn[] }
 type ApiResponse<T> = { status_code: number; message?: string; data?: T } | T;
 
 export type ApiTransaction = {

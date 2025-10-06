@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { useUiStore } from '../../../lib/store';
 
 function getMonday(d: Date): Date {
   const date = new Date(d);
@@ -30,6 +31,8 @@ export default function WeekBottomSheet({
   onSelect: (iso: string) => void;
   currentWeekISO: string;
 }) {
+  const { theme } = useUiStore();
+  const isDark = theme === 'dark';
   const ref = useRef<BottomSheetModal>(null);
   const snapPoints = useMemo(() => ['60%'], []);
 
@@ -60,13 +63,22 @@ export default function WeekBottomSheet({
       backdropComponent={(props) => (
         <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" opacity={0.4} />
       )}
-      backgroundStyle={{ backgroundColor: '#111827', borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: '#6b7280', width: 36, height: 4, borderRadius: 999 }}
+      backgroundStyle={{
+        backgroundColor: isDark ? '#111827' : '#f8fafc',
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+      }}
+      handleIndicatorStyle={{
+        backgroundColor: isDark ? '#6b7280' : '#cbd5f5',
+        width: 36,
+        height: 4,
+        borderRadius: 999,
+      }}
     >
       <BottomSheetView className="flex-1 px-6">
         <View className="mb-5 items-center pt-1">
-          <Text className="text-2xl font-extrabold text-gray-100">เลือกสัปดาห์</Text>
-          <Text className="mt-1 text-base text-gray-400">สัปดาห์เริ่มวันจันทร์–อาทิตย์</Text>
+          <Text className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">เลือกสัปดาห์</Text>
+          <Text className="mt-1 text-base text-gray-500 dark:text-gray-400">สัปดาห์เริ่มวันจันทร์–อาทิตย์</Text>
         </View>
 
         {/* Quick chips */}
@@ -111,5 +123,4 @@ export default function WeekBottomSheet({
     </BottomSheetModal>
   );
 }
-
 
