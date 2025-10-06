@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { useUiStore } from '../../../lib/store';
 
 const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 
@@ -21,6 +22,8 @@ export default function PieChartMonthSheet({
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonthIndex = now.getMonth();
+  const { theme } = useUiStore();
+  const isDark = theme === 'dark';
 
   useEffect(() => {
     if (isVisible) ref.current?.present();
@@ -41,12 +44,21 @@ export default function PieChartMonthSheet({
       backdropComponent={(props) => (
         <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" opacity={0.4} />
       )}
-      backgroundStyle={{ backgroundColor: '#111827', borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: '#6b7280', width: 36, height: 4, borderRadius: 999 }}
+      backgroundStyle={{
+        backgroundColor: isDark ? '#111827' : '#f8fafc',
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+      }}
+      handleIndicatorStyle={{
+        backgroundColor: isDark ? '#6b7280' : '#cbd5f5',
+        width: 36,
+        height: 4,
+        borderRadius: 999,
+      }}
     >
       <BottomSheetView className="flex-1 px-6">
         <View className="mb-5 flex-row items-center justify-between pt-1">
-          <Text className="text-2xl font-extrabold text-gray-100">เลือกเดือนและปี</Text>
+          <Text className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">เลือกเดือนและปี</Text>
           <View className="flex-row items-center">
             <TouchableOpacity className="mr-2 rounded-lg bg-gray-100 dark:bg-gray-800 px-3 py-2" onPress={() => setYear((y) => y - 1)}>
               <Text className="text-gray-700 dark:text-gray-300">‹</Text>
@@ -86,5 +98,4 @@ export default function PieChartMonthSheet({
     </BottomSheetModal>
   );
 }
-
 
