@@ -12,11 +12,16 @@ function guessHost(): string {
 	return '127.0.0.1';
 }
 
-const API_PROTO = (process.env.EXPO_PUBLIC_API_PROTO as string) || 'http';
-const API_HOST = (process.env.EXPO_PUBLIC_API_HOST as string) || guessHost();
-const API_PORT = (process.env.EXPO_PUBLIC_API_PORT as string) || '4567';
+const API_PROTO = process.env.EXPO_PUBLIC_API_PROTO ?? 'http';
+const API_HOST = process.env.EXPO_PUBLIC_API_HOST ?? guessHost();
+const apiPortEnv = process.env.EXPO_PUBLIC_API_PORT;
+const API_PORT = apiPortEnv !== undefined ? apiPortEnv : '4567';
+const API_PATH = process.env.EXPO_PUBLIC_API_BASE_PATH ?? '/api/v1';
 
-export const API_BASE = `${API_PROTO}://${API_HOST}:${API_PORT}/api/v1`;
+const portSegment = API_PORT && API_PORT.length > 0 ? `:${API_PORT}` : '';
+const normalizedPath = API_PATH.startsWith('/') ? API_PATH : `/${API_PATH}`;
+
+export const API_BASE = `${API_PROTO}://${API_HOST}${portSegment}${normalizedPath}`;
 
 type HttpMethod = 'GET' | 'PUT' | 'POST' | 'DELETE';
 
@@ -86,5 +91,4 @@ export async function httpPost<TResponse = unknown, TBody = unknown>(path: strin
 export async function httpDelete<TResponse = unknown>(path: string, token?: string, signal?: AbortSignal): Promise<TResponse> {
 	return await request<TResponse>('DELETE', path, undefined, token, signal);
 }
-
 

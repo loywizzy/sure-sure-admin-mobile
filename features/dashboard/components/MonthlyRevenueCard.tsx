@@ -4,6 +4,7 @@ import { BarChart } from 'react-native-chart-kit';
 import { useQuery } from '@tanstack/react-query';
 import { orderPackageService } from '../../../lib/services/orderPackageService';
 import { useUiStore } from '../../../lib/store';
+import YearPickerSheet from './YearPickerSheet';
 
 const monthsTh = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 
@@ -15,7 +16,9 @@ const formatShort = (n: number) => {
 
 export default function MonthlyRevenueCard() {
   const screenWidth = Dimensions.get('window').width;
-  const [year, setYear] = useState(new Date().getFullYear());
+  const currentYear = new Date().getFullYear();
+  const [year, setYear] = useState(currentYear);
+  const [showYearPicker, setShowYearPicker] = useState(false);
   const { theme } = useUiStore();
   const isDark = theme === 'dark';
 
@@ -32,6 +35,20 @@ export default function MonthlyRevenueCard() {
     return arr.map(Math.round);
   }, [orders, year]);
 
+  const availableYears = useMemo(() => {
+    const set = new Set<number>();
+    orders.forEach((o) => {
+      const created = new Date(o.created_date);
+      if (!Number.isNaN(created.getTime())) {
+        set.add(created.getFullYear());
+      }
+    });
+    const fallbackYears = Array.from({ length: 6 }, (_, idx) => currentYear - idx);
+    fallbackYears.forEach((yr) => set.add(yr));
+    set.add(year);
+    return Array.from(set).sort((a, b) => b - a);
+  }, [orders, year, currentYear]);
+
   const barWidth = 48;
   const paddingX = 32 + 40;
   const chartWidth = Math.max(screenWidth - paddingX, monthsTh.length * barWidth);
@@ -47,17 +64,14 @@ export default function MonthlyRevenueCard() {
         <View className="flex-row items-center">
           <Text className="text-lg font-bold text-gray-800 dark:text-gray-100">รายได้รายเดือน</Text>
         </View>
-        <View className="flex-row items-center">
-          <TouchableOpacity className="mr-2 rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-2" onPress={() => setYear((y) => y-1)}>
-            <Text className="text-gray-600 dark:text-gray-300">‹</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-2">
-            <Text className="text-sm text-gray-600 dark:text-gray-300">{year}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="ml-2 rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-2" onPress={() => setYear((y) => y+1)}>
-            <Text className="text-gray-600 dark:text-gray-300">›</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          className="flex-row items-center rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-2"
+          activeOpacity={0.85}
+          onPress={() => setShowYearPicker(true)}
+        >
+          <Text className="text-sm font-medium text-gray-700 dark:text-gray-200 mr-2">{year}</Text>
+          <Text className="text-gray-500 dark:text-gray-400">▾</Text>
+        </TouchableOpacity>
       </View>
 
       <Text className="-mt-4 mb-3 text-sm text-gray-500 dark:text-gray-400">รายได้จากแพ็คเกจ (บาท)</Text>
@@ -95,8 +109,18 @@ export default function MonthlyRevenueCard() {
         <Text className="text-sm text-gray-600 dark:text-gray-400">รวมทั้งปี</Text>
         <Text className="text-sm font-semibold text-gray-900 dark:text-gray-100">{total.toLocaleString('th-TH')}</Text>
       </View>
+
+      <YearPickerSheet
+        isVisible={showYearPicker}
+        onClose={() => setShowYearPicker(false)}
+        onSelect={(selectedYear) => {
+          setYear(selectedYear);
+          setShowYearPicker(false);
+        }}
+        value={year}
+        years={availableYears}
+      />
     </View>
   );
 }
-
 
