@@ -47,7 +47,7 @@ export default function UserDetailScreen() {
 
   const kpis = useMemo(() => {
     const total = relatedTxns.length;
-    const success = relatedTxns.filter((t) => t.status === 'TRANSACTION SUCCESSFUL').length;
+    const success = relatedTxns.filter((t) => t.status === 'TRANSACTION_SUCCESS').length;
     const failed = total - success;
     const now = new Date();
     const thisMonth = now.getMonth();
@@ -192,7 +192,7 @@ export default function UserDetailScreen() {
                 </View>
                 <View className="mt-1 flex-row items-center justify-between">
                   <Text className="text-sm text-gray-700 dark:text-gray-300">{t.bank} · {t.transferId}</Text>
-                  <Text className={`text-sm font-semibold ${t.status === 'TRANSACTION SUCCESSFUL' ? 'text-green-600' : 'text-red-600'}`}>{t.status}</Text>
+                  <Text className={`text-sm font-semibold ${t.status === 'TRANSACTION_SUCCESS' ? 'text-green-600' : 'text-red-600'}`}>{t.status}</Text>
                 </View>
               </View>
             ))

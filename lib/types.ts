@@ -11,7 +11,7 @@ export type PackageItem = {
 };
 
 export type TransactionStatus =
-  | 'TRANSACTION SUCCESSFUL'
+  | 'TRANSACTION_SUCCESS'
   | 'TRANSACTION UNSUCCESSFUL'
   | 'RECEIVER NOT MATCH'
   | 'AMOUNT LESS THAN MINIMUM'

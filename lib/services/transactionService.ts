@@ -41,7 +41,7 @@ function unwrap<T>(res: ApiResponse<T>): T {
 
 function mapStatus(s?: string, code?: string): TransactionStatus {
   const norm = (s || '').toUpperCase().replace(/\s+/g, ' ').trim();
-  if (norm === 'SUCCESS' || code === '00') return 'TRANSACTION SUCCESSFUL';
+  if (norm === 'SUCCESS' || norm === 'TRANSACTION SUCCESSFUL' || norm === 'TRANSACTION_SUCCESS' || code === '00') return 'TRANSACTION_SUCCESS';
   if (norm === 'FAILED') return 'TRANSACTION UNSUCCESSFUL';
   if (norm === 'RECEIVER NOT MATCH' || norm === 'RECEIVER_NOT_MATCH') return 'RECEIVER NOT MATCH';
   if (

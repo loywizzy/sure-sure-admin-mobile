@@ -11,7 +11,7 @@ interface VerificationRecord {
   date: string;
   firstName: string;
   lastName: string;
-  status: 'สำเร็จ' | 'ไม่สำเร็จ' | 'รอตรวจสอบ' | 'บัญชีผู้รับไม่ตรง' | 'จำนวนเงินน้อยกว่าขั้นต่ำ'| 'ไม่สามารถตรวจสอบได้' ;
+  status: 'สำเร็จ' | 'ไม่สำเร็จ' | 'รอตรวจสอบ' | 'บัญชีผู้รับไม่ตรง' | 'จำนวนเงินน้อยกว่าขั้นต่ำ' | 'ไม่สามารถตรวจสอบได้';
   customerNo: string;
 }
 
@@ -33,7 +33,7 @@ export default function TransactionList() {
     date: new Date(t.createdAt).toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' }),
     firstName: t.firstName,
     lastName: t.lastName,
-    status: t.status === 'TRANSACTION SUCCESSFUL' ? 'สำเร็จ' : 'ไม่สำเร็จ',
+    status: t.status === 'TRANSACTION_SUCCESS' ? 'สำเร็จ' : 'ไม่สำเร็จ',
   })), [apiTxns]);
 
   const formatDate = (date: Date | null): string => {

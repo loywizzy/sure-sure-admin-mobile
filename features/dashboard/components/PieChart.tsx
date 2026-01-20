@@ -37,11 +37,11 @@ export default function PieChartComponent() {
     const newCustomers = orders.filter((o) => o.status === 'SUCCESS' && isSameMonth(o.created_date)).length;
 
     // สลิปที่ถูกต้อง (ธุรกรรม SUCCESS)
-    const txSuccess = txns.filter((t) => isSameMonth(t.createdAt) && t.status === 'TRANSACTION SUCCESSFUL').length;
+    const txSuccess = txns.filter((t) => isSameMonth(t.createdAt) && t.status === 'TRANSACTION_SUCCESS').length;
 
     // ข้อผิดพลาด (ธุรกรรมไม่ SUCCESS)
     const txError = txns.length > 0
-      ? txns.filter((t) => isSameMonth(t.createdAt) && t.status !== 'TRANSACTION SUCCESSFUL').length
+      ? txns.filter((t) => isSameMonth(t.createdAt) && t.status !== 'TRANSACTION_SUCCESS').length
       : 0;
 
     // เลขบัญชีไม่ตรงกับผู้รับ
@@ -69,7 +69,7 @@ export default function PieChartComponent() {
   ], [monthStats]);
 
   const monthLabel = useMemo(() => {
-    const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
     return `${months[selected.monthIndex]} ${selected.year}`;
   }, [selected]);
 

@@ -16,6 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { transactionService } from '../lib/services/transactionService';
 import { packageService } from '../lib/services/packageService';
 import { userService } from '../lib/services/userService';
+import { orderPackageService } from '../lib/services/orderPackageService';
 
 export default function Index() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
@@ -41,8 +42,9 @@ export default function Index() {
     setIsSidebarVisible(false);
   };
 
-  // รายได้เดือนนี้/เดือนที่แล้ว จาก transaction.amount
+  // รายได้เดือนนี้/เดือนที่แล้ว จาก Order ที่ status = 'SUCCESS'
   const { data: txns = [] } = useQuery({ queryKey: ['transactions'], queryFn: transactionService.fetchTransactions });
+  const { data: orders = [] } = useQuery({ queryKey: ['order-packages'], queryFn: orderPackageService.fetchOrderPackages });
   const { data: pkgs = [] } = useQuery({ queryKey: ['packages'], queryFn: packageService.fetchPackages });
   const { data: users = [] } = useQuery({ queryKey: ['users'], queryFn: userService.fetchUsers });
   const { thisMonthRevenue, lastMonthRevenue, diffLabel, diffIsUp } = useMemo(() => {
@@ -55,9 +57,10 @@ export default function Index() {
 
     let thisSum = 0;
     let lastSum = 0;
-    for (const t of txns) {
-      const d = new Date(t.createdAt);
-      const amt = typeof t.amount === 'number' ? t.amount : 0;
+    for (const o of orders) {
+      if (o.status !== 'SUCCESS') continue;
+      const d = new Date(o.created_date);
+      const amt = Number(o.price || 0);
       if (d.getFullYear() === thisYear && d.getMonth() === thisMonth) thisSum += amt;
       else if (d.getFullYear() === lastYear && d.getMonth() === lastMonth) lastSum += amt;
     }
@@ -69,14 +72,14 @@ export default function Index() {
       diffLabel: `${formattedDiff}฿`,
       diffIsUp: diff >= 0,
     };
-  }, [txns]);
+  }, [orders]);
 
   // ยอดการใช้งานรายวันจากธุรกรรมในสัปดาห์ที่เลือก
   const dailyCounts = useMemo(() => {
     const counts = Array(7).fill(0) as number[]; // Mon..Sun
     const start = new Date(weekStart);
     const end = new Date(weekEnd);
-    end.setHours(23,59,59,999);
+    end.setHours(23, 59, 59, 999);
     for (const t of txns) {
       const d = new Date(t.createdAt);
       if (d >= start && d <= end) {
@@ -106,7 +109,7 @@ export default function Index() {
   // สรุปจำนวนรายการตรวจสอบจากธุรกรรม
   const checksSummary = useMemo(() => {
     const total = txns.length;
-    const success = txns.filter((t) => t.status === 'TRANSACTION SUCCESSFUL').length;
+    const success = txns.filter((t) => t.status === 'TRANSACTION_SUCCESS').length;
     const failed = total - success;
     return { total, success, failed };
   }, [txns]);
@@ -119,12 +122,14 @@ export default function Index() {
     return { total, active, inactive };
   }, [pkgs]);
 
-  // สรุปลูกค้า: ทั้งหมด/active/หมดอายุ
+  // สรุปลูกค้า: ทั้งหมด/active/หมดอายุ (ไม่รวม admin)
   const userSummary = useMemo(() => {
-    const total = users.length;
-    const active = users.filter((u) => u.active).length;
-    const now = new Date();
-    const expired = users.filter((u) => new Date(u.expiresAt) < now).length;
+    // กรอง admin ออกก่อน
+    const customers = users.filter(u => u.role !== 'admin');
+    const total = customers.length;
+    const active = customers.filter((u) => u.active).length;
+    // หมดอายุ/ไม่ใช้งาน ให้ดูที่ active = false (is_active = 0)
+    const expired = customers.filter((u) => !u.active).length;
     return { total, active, expired };
   }, [users]);
 

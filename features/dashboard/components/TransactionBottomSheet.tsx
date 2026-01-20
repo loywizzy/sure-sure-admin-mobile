@@ -50,8 +50,8 @@ export default function SearchBottomSheet({
 
   const statusOptions = [
     {
-      id: 'TRANSACTION_SUCCESSFUL',
-      label: 'TRANSACTION SUCCESSFUL',
+      id: 'TRANSACTION_SUCCESS',
+      label: 'TRANSACTION_SUCCESS',
       value: 'สำเร็จ',
       kind: 'success' as const,
     },
@@ -168,6 +168,6 @@ export default function SearchBottomSheet({
           })}
         </View>
       </BottomSheetView>
-      </BottomSheetModal>
+    </BottomSheetModal>
   );
 }

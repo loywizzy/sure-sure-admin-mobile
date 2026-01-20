@@ -41,7 +41,7 @@ export default function TransactionsScreen() {
     // Status filter: map Thai label from bottom sheet to our enum
     if (selectedStatus) {
       const thaiToEnglish: Record<string, TransactionStatus> = {
-        'สำเร็จ': 'TRANSACTION SUCCESSFUL',
+        'สำเร็จ': 'TRANSACTION_SUCCESS',
         'ไม่สำเร็จ': 'TRANSACTION UNSUCCESSFUL',
         'บัญชีผู้รับไม่ตรง': 'RECEIVER NOT MATCH',
         'จำนวนเงินน้อยกว่าขั้นต่ำ': 'AMOUNT LESS THAN MINIMUM',
@@ -68,9 +68,8 @@ export default function TransactionsScreen() {
 
   const StatusPill = ({ label, tone }: { label: string; tone: 'success' | 'danger' }) => (
     <View
-      className={`rounded-full px-4 py-2 ${tone === 'success' ? 'bg-green-50' : 'bg-red-50'} border ${
-        tone === 'success' ? 'border-green-200' : 'border-red-200'
-      }`}
+      className={`rounded-full px-4 py-2 ${tone === 'success' ? 'bg-green-50' : 'bg-red-50'} border ${tone === 'success' ? 'border-green-200' : 'border-red-200'
+        }`}
       style={{
         shadowColor: tone === 'success' ? '#22c55e' : '#ef4444',
         shadowOffset: { width: 0, height: 5 },
@@ -85,7 +84,7 @@ export default function TransactionsScreen() {
   );
 
   const renderCard = (t: DisplayTxn, idx: number) => {
-    const tone = t.status === 'TRANSACTION SUCCESSFUL' ? 'success' : 'danger';
+    const tone = t.status === 'TRANSACTION_SUCCESS' ? 'success' : 'danger';
     return (
       <View
         key={idx}
@@ -107,7 +106,7 @@ export default function TransactionsScreen() {
 
         <StatusPill
           label={t.status}
-          tone={t.status === 'TRANSACTION SUCCESSFUL' ? 'success' : 'danger'}
+          tone={t.status === 'TRANSACTION_SUCCESS' ? 'success' : 'danger'}
         />
       </View>
     );

@@ -35,7 +35,7 @@ async function ensureSeeds(): Promise<void> {
 
   if (!txns) {
     const seed: TransactionItem[] = [
-      { id: '000001', customerNo: '59', firstName: 'John', lastName: 'Kub', createdAt: new Date('2021-04-23').toISOString(), bank: 'KBank', transferId: '#88201', status: 'TRANSACTION SUCCESSFUL' },
+      { id: '000001', customerNo: '59', firstName: 'John', lastName: 'Kub', createdAt: new Date('2021-04-23').toISOString(), bank: 'KBank', transferId: '#88201', status: 'TRANSACTION_SUCCESS' },
       { id: '000002', customerNo: '59', firstName: 'สมหญิง', lastName: 'รักดี', createdAt: new Date('2021-04-18').toISOString(), bank: 'KBank', errorMsg: 'Amount < Minimum', transferId: '#88201', status: 'ERROR' },
       { id: '000003', customerNo: '59', firstName: 'สมหญิง', lastName: 'รักดี', createdAt: new Date('2021-04-18').toISOString(), bank: 'KBank', errorMsg: 'Amount < Minimum', transferId: '#88201', status: 'TRANSACTION UNSUCCESSFUL' },
       { id: '000004', customerNo: '59', firstName: 'สมหญิง', lastName: 'รักดี', createdAt: new Date('2021-04-18').toISOString(), bank: 'KBank', errorMsg: 'Amount < Minimum', transferId: '#88201', status: 'RECEIVER NOT MATCH' },
