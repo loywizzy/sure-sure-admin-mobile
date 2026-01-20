@@ -65,11 +65,13 @@ export default function Index() {
       else if (d.getFullYear() === lastYear && d.getMonth() === lastMonth) lastSum += amt;
     }
     const diff = thisSum - lastSum;
-    const formattedDiff = new Intl.NumberFormat('th-TH').format(Math.abs(Math.round(diff)));
+    // คำนวณเปอร์เซ็นต์การเปลี่ยนแปลง
+    const percentChange = lastSum > 0 ? (diff / lastSum) * 100 : 0;
+    const formattedPercent = Math.abs(percentChange).toFixed(2);
     return {
       thisMonthRevenue: Math.round(thisSum),
       lastMonthRevenue: Math.round(lastSum),
-      diffLabel: `${formattedDiff}฿`,
+      diffLabel: `${formattedPercent}%`,
       diffIsUp: diff >= 0,
     };
   }, [orders]);
