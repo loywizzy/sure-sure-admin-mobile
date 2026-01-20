@@ -101,7 +101,6 @@ export default function TransactionsScreen() {
         <Text className="text-sm text-gray-700 dark:text-gray-300">| ชื่อลูกค้า: {t.firstName} {t.lastName}</Text>
         <Text className="text-sm text-gray-700 dark:text-gray-300">| ธนาคาร: {t.bank}</Text>
         <Text className="text-sm text-gray-700 dark:text-gray-300">| วันที่ทำรายการ: {t.createdAt.toLocaleString('th-TH', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })}</Text>
-        <Text className="text-sm text-gray-700 dark:text-gray-300">| ErrorMsg: {t.errorMsg ?? '-'}</Text>
         <Text className="mb-3 text-sm text-gray-700 dark:text-gray-300">| Transfer ID: {t.transferId}</Text>
 
         <StatusPill
